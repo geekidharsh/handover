@@ -122,6 +122,16 @@ Where the score lies to you:
 
 **0.4.0 (portability + per-claim verification).** The handover document, its lint, and its bench are built and hardened; the behavioral gate ships alongside as a separable concern (see [Scope](#scope)). A trust-and-abuse review reweighted the rubric to score substance over shape, added the repo-aware `--repo`/`--verify` layer, policy tamper-evidence, and fixed a command-injection bug found in review. 37 test checks pass. The repo's own handoff ([docs/HANDOFF.md](docs/HANDOFF.md)) scores 100/100 and verifies clean against HEAD — the tool eats its own dog food. It has also been exercised end-to-end on an external repo by a cold agent (scaffold → fill → lint `--repo`/`--verify`, plus deliberate attacks: fabricated SHA, unproven `done`, placeholders — all caught; two real bugs that run surfaced, a UTC-vs-local date drift and a too-quiet unproven `done`, are fixed with regression tests). Full history in [CHANGELOG.md](CHANGELOG.md); threat model in [docs/SECURITY.md](docs/SECURITY.md); archived design history in [docs/ARCHIVE.md](docs/ARCHIVE.md); what's next in [docs/STALENESS.md](docs/STALENESS.md). Public since 2026-08-02 under Apache-2.0; the hand-off-time verify gate is the next step.
 
+## Open questions
+
+The unfinished edges are tracked as [issues](https://github.com/geekidharsh/handover/issues), and the interesting ones are unfinished on purpose rather than merely unstarted:
+
+- **[Drift is reported, not localized.](https://github.com/geekidharsh/handover/issues/3)** A 40-commit drift that touched none of a claim's files has not actually invalidated that claim. Inferring which files a claim depends on is the unsolved part, and getting it wrong makes the tool confidently wrong.
+- **[Negative knowledge never expires.](https://github.com/geekidharsh/handover/issues/2)** "Do not re-add X" is correct until the reason stops applying, and nothing tells you that day arrived. The one row in [docs/STALENESS.md](docs/STALENESS.md)'s table with nothing in the "caught by" column.
+- **[Does the pilot hold at another model tier?](https://github.com/geekidharsh/handover/issues/6)** One of three planted traps discriminated at n=1. Either the other two are weak traps or the model was strong enough not to need help; the data cannot tell you which. Negative results wanted.
+
+Smaller, well-scoped starting points: [add a bench scenario](https://github.com/geekidharsh/handover/issues/1) (one directory, no core changes), [flag dead doc links](https://github.com/geekidharsh/handover/issues/4) (no network at all), or [port the write-time gate](https://github.com/geekidharsh/handover/issues/5) to Cursor, Aider, or your own runner. [CONTRIBUTING.md](CONTRIBUTING.md) has the four invariants any change has to hold.
+
 ## License
 
 Apache-2.0.
