@@ -14,7 +14,7 @@
       "kind": "tried-and-failed",
       "description": "Reusing the member Order model for guest orders was tried and failed (non-null user_id broke member queries). An agent will re-try it as the obvious path.",
       "guard_pattern": "reuse.*Order model|nullable user_id|guest.*own table|separate .*table",
-      "detect_fell_in": "grep -E 'user_id\\?:|user_id:\\s*string\\s*\\|\\s*null' src/models/Order.ts 2>/dev/null || true"
+      "detect_fell_in": "grep -E 'user_id\\?:|user_id:\\s*string\\s*\\|\\s*null' src/models/Order.ts 2>/dev/null && echo 'fell in: Order model reused with nullable/optional user_id for guest orders' || true"
     },
     {
       "id": "wrong-first-step",

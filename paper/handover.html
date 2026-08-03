@@ -104,9 +104,12 @@
     next.
   </p>
   <p>
-    This is not a rare failure mode. Every agent that operates across session boundaries
-    inherits a summary whose claims are unverified and whose omissions are invisible.
-    The receiving agent cannot tell whether &ldquo;the migration is applied&rdquo; is
+    These two incidents are anecdotes, not measurements &mdash; we have no population-level
+    data on how often handoffs fail this way, and this paper does not claim to. What they
+    illustrate is a structural gap, not a frequency: any agent that picks up work across a
+    session boundary receives only what the outgoing process chose to write down, and
+    nothing in that summary is checked against what is actually true by the time it is
+    read. The receiving agent cannot tell whether &ldquo;the migration is applied&rdquo; is
     still true, whether &ldquo;we tried X and it failed&rdquo; is recorded anywhere at
     all, or whether the one correct next step is the first thing it happens to attempt.
     Positive state &mdash; what exists &mdash; is recoverable by reading the code.
@@ -177,15 +180,25 @@
   <p>
     <strong>Benchmarks.</strong> SWE-bench <span class="footnote">[Jimenez et al.,
     arXiv:2310.06770]</span> established the now-standard genre this work's benchmark
-    belongs to: real GitHub issues and their merged pull requests as ground truth for
-    whether an agent resolved a repository-grounded task. Its direct descendant, SWE
+    belongs to <em>in spirit</em> &mdash; a repository-grounded task with a checkable
+    outcome. Its methodology is not ours: SWE-bench mines real GitHub issues and their
+    merged pull requests at scale as ground truth, where our benchmark is three
+    hand-authored synthetic scenarios built specifically to contain a planted trap; the two
+    are not comparable in scale or provenance, only in genre. Its direct descendant, SWE
     Context Bench <span class="footnote">[Zhu et al., arXiv:2602.08316]</span>, is the
     closest sibling to our benchmark specifically: it measures whether coding agents
     improve on a task by reusing summarized experience from related prior tasks, across
     1,100 base tasks and 376 related tasks spanning 51 repositories. Both measure task
     resolution or context <em>reuse</em> in aggregate; neither plants a specific
     adversarial trap and measures whether a single transferred artifact steers an agent
-    away from it. To our knowledge no existing benchmark does. Separately, work on negative
+    away from it. The closer methodological analog is adversarial agent-safety benchmarks
+    such as AgentDojo <span class="footnote">[Debenedetti et al., arXiv:2406.13352]</span>,
+    which plants a malicious instruction in an agent's environment and measures whether the
+    agent acts on it. The plant-and-measure structure is shared with our traps; the threat
+    model is not &mdash; AgentDojo measures resistance to an adversarial actor's intent,
+    while our traps encode a benign but incomplete or misleading handoff (deception vs.
+    omission). To our knowledge, no existing benchmark applies a planted-trap structure to
+    context-transfer artifacts specifically. Separately, work on negative
     knowledge as a failure-aware shared memory for autonomous research agents
     <span class="footnote">[Wang, arXiv:2606.21024]</span> argues, in a different domain
     (scientific research agents rather than coding agents), that failed attempts should
@@ -353,8 +366,15 @@
     traps (<em>bad</em>), or nothing (<em>none</em>, the control). A single model
     (claude-sonnet-5, via the Claude Agent SDK) was given an identical task description
     &mdash; finish wiring guest checkout end to end &mdash; and worked to completion in
-    each condition, one trial per condition (n=1). We report this scope precisely because
-    it does not license a general claim; it is a pilot, not a study.
+    each condition, one trial per condition (n=1). Each trial ran as a general-purpose
+    coding agent with full read/write/edit/shell tool access to the fixture repository
+    &mdash; the same surface a human developer would have via a terminal and editor &mdash;
+    and no explicit turn or step cap; a trial ended when the agent itself reported the task
+    complete. We did not record or standardize tool-call counts across conditions, so we
+    cannot report whether one condition took materially more exploration to reach a
+    self-reported completion than another; completion was judged only by the mechanical
+    probes in &sect;7.4, never by the agent's own report. We report this scope precisely
+    because it does not license a general claim; it is a pilot, not a study.
   </p>
   <h3>7.2 A confounded first run, and why</h3>
   <p>
@@ -438,6 +458,17 @@
     author would actually write. This is distinct from the next limitation (STRUCTURE
     being gameable by a dishonest author) &mdash; that concerns adversarial gaming; this
     concerns ordinary authorship bias in constructing the evaluation itself.</li>
+    <li><strong>The trap taxonomy is not independent of the protocol it evaluates.</strong>
+    The four trap kinds (reverted-do-not-re-add, tried-and-failed, ambiguous-next-action,
+    decision-relitigation) are drawn directly from the same four negative-knowledge
+    categories STRUCTURE itself scores (&sect;2b, &sect;4.1). This is a stronger claim
+    than same-author bias above: even a different author's naive summary is being measured
+    against a benchmark whose pass condition is definitionally close to &ldquo;did the
+    artifact contain the kind of statement the protocol asks for.&rdquo; The &sect;6
+    separation is therefore partly true by construction, not solely evidence that any
+    effective handoff &mdash; regardless of shape &mdash; would score well here. An
+    evaluation built from a trap taxonomy independent of the protocol's own categories
+    would be stronger evidence and is not yet done.</li>
     <li><strong>STRUCTURE is gameable by construction.</strong> A fluent, dishonest
     author can write four plausible negative-knowledge lines that are false; only the
     VERIFICATION layer, run by a receiver who chooses to run it, and a human reading the
@@ -449,6 +480,12 @@
     <li><strong>Single-model empirical layer.</strong> No comparison across model
     capability tiers exists yet; whether weaker models show discrimination on traps 2 and
     3 where this model did not is an open, answerable question, not yet answered.</li>
+    <li><strong>Can an agent author a passing Handover document?</strong> Every artifact
+    scored in this paper, compliant or naive, was written by a human. The protocol's
+    premise is agent-to-agent handoff, so the more load-bearing question &mdash; whether an
+    agent, not a human, can reliably produce a document that earns a high STRUCTURE score
+    and (harder) actually carries the negative knowledge a receiving agent needs &mdash;
+    is untested here.</li>
   </ul>
 
   <h2><span class="section-num">9</span>Future Work</h2>
@@ -467,8 +504,11 @@
   <p>
     Handover is released as a protocol specification, a zero-dependency deterministic
     CLI (lint, scaffold, and bench), and three benchmark scenarios, all under Apache-2.0.
-    The deterministic layer shows a large, reliable separation between compliant and
-    naive artifacts across all three scenarios. The empirical layer, run once, honestly,
+    The deterministic layer shows a large, reproducible separation between compliant and
+    naive artifacts across all three scenarios &mdash; though, as &sect;8 details, that
+    separation is same-author and partly definitional, closer to a unit test of the scorer
+    than to independent evidence about handoffs a different author would write. The
+    empirical layer, run once, honestly,
     end to end, shows one real discriminating signal and two null results with documented
     reasons &mdash; and, arguably as valuable, two concrete methodological lessons for
     anyone building this class of trap-based benchmark: negative knowledge must live only
@@ -478,6 +518,7 @@
 
   <h2 style="margin-top:24px;">References</h2>
   <div class="refs">
+    <p>Debenedetti, E., Zhang, J., Balunović, M., Beurer-Kellner, L., Fischer, M., &amp; Tramèr, F. (2024). AgentDojo: A Dynamic Environment to Evaluate Prompt Injection Attacks and Defenses for LLM Agents. arXiv:2406.13352.</p>
     <p>Jimenez, C. E., Yang, J., Wettig, A., Yao, S., Pei, K., Press, O., &amp; Narasimhan, K. (2023). SWE-bench: Can Language Models Resolve Real-World GitHub Issues? arXiv:2310.06770.</p>
     <p>Packer, C., Wooders, S., Lin, K., Fang, V., Patil, S. G., Stoica, I., &amp; Gonzalez, J. E. (2023). MemGPT: Towards LLMs as Operating Systems. arXiv:2310.08560.</p>
     <p>Wang, H. (2026). Negative Knowledge as Failure-aware Shared Memory for AutoResearch. arXiv:2606.21024.</p>
