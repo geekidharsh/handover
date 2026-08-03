@@ -1,0 +1,1 @@
+{"session_id":"sbtest9","cwd":"/tmp","hook_event_name":"PostToolUse","tool_name":"Bash","tool_input":{"command":"npm run build"},"tool_response":{"stdout":"Build complete. 0 errors, 0 warnings.\nNo conflicts found."}}

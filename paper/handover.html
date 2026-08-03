@@ -1,0 +1,490 @@
+<!doctype html>
+<html data-theme="light">
+<head>
+<meta charset="utf-8">
+<title>Handover: An Enforced Agent-to-Agent Handoff Document and a Trap-Based Benchmark for Measuring Context Transfer</title>
+<style>
+  :root {
+    --paper: #fbfaf7; --ink: #17181a; --ink-2: #4a4c50; --ink-3: #6b6d70;
+    --rule: #d8d5cc; --accent: #8a3324; --code-bg: #f0eee7;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #f2f0ea; }
+  body { display: flex; justify-content: center; padding: 0; }
+  .page {
+    width: 760px;
+    max-width: 100%;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "iowan old style", "Palatino Linotype", Palatino, Georgia, serif;
+    padding: 50px 56px 52px;
+    line-height: 1.48;
+  }
+  .title { font-size: 25px; font-weight: 600; line-height: 1.28; margin: 0 0 13px; text-wrap: balance; }
+  .authors { font-family: system-ui, -apple-system, sans-serif; font-size: 14px; color: var(--ink-2); margin: 0 0 2px; }
+  .affil { font-family: system-ui, -apple-system, sans-serif; font-size: 12px; color: var(--ink-3); margin: 0 0 20px; }
+  .abstract-box { border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding: 16px 0 18px; margin: 0 0 24px; }
+  .abstract-label { font-family: system-ui, -apple-system, sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin: 0 0 8px; }
+  .abstract-box p { font-size: 13.5px; margin: 0; text-align: justify; }
+  h2 { font-size: 16px; font-weight: 600; margin: 22px 0 8px; letter-spacing: -0.005em; }
+  h3 { font-size: 14px; font-weight: 600; margin: 14px 0 5px; font-style: italic; }
+  p { font-size: 13.5px; margin: 0 0 9px; text-align: justify; hyphens: auto; }
+  code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; background: var(--code-bg); padding: 1px 4px; border-radius: 3px; }
+  pre { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11.5px; background: var(--code-bg); padding: 10px 12px; border-radius: 6px; overflow-x: auto; line-height: 1.4; margin: 7px 0 12px; }
+  table { width: 100%; border-collapse: collapse; margin: 7px 0 13px; font-family: system-ui, -apple-system, sans-serif; font-size: 12px; }
+  th { text-align: left; font-weight: 600; padding: 4px 9px; border-bottom: 1.5px solid var(--ink); color: var(--ink); }
+  td { padding: 4px 9px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  tr:last-child td { border-bottom: 1px solid var(--ink-3); }
+  .num { font-variant-numeric: tabular-nums; }
+  .fell-in { color: var(--accent); font-weight: 600; }
+  .avoided { color: #2a6b2a; font-weight: 600; }
+  ul, ol { font-size: 13.5px; margin: 0 0 10px; padding-left: 22px; }
+  li { margin-bottom: 2px; }
+  .footnote { font-size: 12px; color: var(--ink-3); font-family: system-ui, -apple-system, sans-serif; }
+  .refs p { font-size: 11.5px; text-indent: -20px; padding-left: 20px; margin-bottom: 6px; }
+  .section-num { color: var(--ink-3); font-weight: 400; margin-right: 6px; }
+  @media print {
+    body { background: white; padding: 0; }
+    .page { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <h1 class="title">Handover: An Enforced Agent-to-Agent Handoff Document and a Trap-Based Benchmark for Measuring Context Transfer</h1>
+  <p class="authors">Harshvardhan Pandey</p>
+  <p class="affil">Independent &middot; github.com/geekidharsh/handover</p>
+
+  <div class="abstract-box">
+    <p class="abstract-label">Abstract</p>
+    <p>
+      Coding agents lose context at every session boundary: the successor inherits a
+      natural-language summary whose claims are neither verified against the system's
+      current state nor checked for whether they actually prevent the successor from
+      repeating a known failure. We present Handover, a content contract for
+      agent-to-agent handoff artifacts built around one invariant: a cold agent given
+      only the artifact and repository access should reach the same decisions the sender
+      would. Handover pairs a machine-validated header &mdash; a version-control
+      freshness anchor, a single unambiguous next action, and a verification command
+      &mdash; with a deterministic, LLM-free scorer that separates document
+      <em>shape</em> (a 0&ndash;100 structural rubric) from <em>truth</em>
+      (repository-aware checks: does the anchor commit exist, how far has the codebase
+      drifted, does a declared &ldquo;done&rdquo; status actually pass its own
+      verification command). We further introduce a trap-based benchmark: repository
+      scenarios instrumented with deliberately planted failure states &mdash; a reverted
+      change that invites re-introduction, a path already tried and abandoned, an
+      ambiguous next step &mdash; and a two-layer measurement of whether a handoff
+      artifact steers a receiving agent away from them, first via a deterministic
+      text-presence proxy and second via direct agent-in-the-loop trial. Across three
+      scenarios, a protocol-compliant artifact scores 100/100 and covers all planted
+      traps, while a naive session summary scores below 20/100 and covers none. In a
+      first agent-in-the-loop pilot (one scenario, n=1 per condition), the
+      protocol-compliant artifact was the only one of three conditions &mdash; compliant
+      artifact, a misleading summary, and no artifact at all &mdash; that avoided
+      reintroducing a previously-reverted client-side pricing bug; the other two planted
+      traps showed no discrimination at this scale, for reasons we report, alongside a
+      methodological hazard the pilot surfaced twice over in constructing trap-based
+      fixtures. We release the protocol specification, the lint/scaffold/bench tooling
+      (zero dependencies, no network, no model in any enforcement path), and the
+      benchmark scenarios under Apache-2.0.
+    </p>
+  </div>
+
+  <h2><span class="section-num">1</span>Introduction</h2>
+  <p>
+    An agent audited a git branch 288 commits behind the trunk it was meant to review;
+    nearly every issue it reported had already been fixed upstream. A one-line baseline
+    check &mdash; how far behind is this branch, really &mdash; would have caught it
+    before the audit began. In an unrelated session, a different agent re-resolved an
+    identical squash-merge conflict on six separate branches in a row, silently, until a
+    human finally asked why something routine was taking so long. Neither agent was
+    malfunctioning. What failed in both cases was the handoff: the artifact, or absence
+    of one, that a work session leaves for whichever process picks up the workstream
+    next.
+  </p>
+  <p>
+    This is not a rare failure mode. Every agent that operates across session boundaries
+    inherits a summary whose claims are unverified and whose omissions are invisible.
+    The receiving agent cannot tell whether &ldquo;the migration is applied&rdquo; is
+    still true, whether &ldquo;we tried X and it failed&rdquo; is recorded anywhere at
+    all, or whether the one correct next step is the first thing it happens to attempt.
+    Positive state &mdash; what exists &mdash; is recoverable by reading the code.
+    Negative knowledge &mdash; what was tried and abandoned, what was deliberately left
+    unbuilt, what was built and reverted &mdash; is not, and is exactly the part a
+    natural-language summary is least disciplined about preserving.
+  </p>
+  <p>
+    Existing agent-to-agent handoff mechanisms address the transport problem: they move
+    state, task specifications, or conversation history between processes (&sect;2). None
+    of the mechanisms we found verify that a transferred claim is still true against live
+    repository state, and none measure whether a transferred artifact actually prevents a
+    receiving agent from repeating a specific, previously-encountered failure. This paper
+    addresses both gaps. Our contributions:
+  </p>
+  <ol>
+    <li>A content contract for lossless handoff (&sect;3) built around one invariant, with
+    a machine-validated header carrying the facts that must never be lost or ambiguous.</li>
+    <li>A deterministic, LLM-free scorer (&sect;4) that separates a document's
+    <em>shape</em> from its <em>truth</em>, the latter checked against live repository
+    state rather than asserted.</li>
+    <li>A trap-based benchmark methodology (&sect;5&ndash;7): repository scenarios
+    instrumented with planted failure states, measured first by a deterministic proxy and
+    second by direct agent-in-the-loop trial, plus three scenarios and a real (if
+    narrow) empirical pilot &mdash; including two methodological hazards the pilot
+    surfaced and the fixes for them, reported as findings for constructing this class of
+    benchmark, not just patched quietly.</li>
+    <li>An open-source release (protocol specification, CLI tooling, benchmark scenarios)
+    under Apache-2.0, with zero runtime dependencies and no model or network call in any
+    enforcement path.</li>
+  </ol>
+
+  <h2><span class="section-num">2</span>Related Work</h2>
+  <p>
+    <strong>Agent handoff as a runtime primitive.</strong> The OpenAI Agents SDK's
+    <code>handoffs</code> construct, Google's Agent2Agent (A2A) protocol, LangGraph's
+    <code>Command</code>-based routing, AutoGen <span class="footnote">[Wu et al.,
+    arXiv:2308.08155]</span>, and CrewAI all provide in-flight task or conversation
+    transfer between agent processes. AutoGen in particular formalizes multi-agent
+    conversation as the coordination substrate itself, agents exchanging messages to
+    jointly solve a task. These are delegation envelopes in the sense of &sect;1: a
+    bounded, ephemeral handoff between a parent and a child process. None produce a
+    durable, file-based artifact with a freshness anchor that can be checked against
+    repository state after the fact, and none are scored.
+  </p>
+  <p>
+    <strong>Handoff bundle files.</strong> Community projects such as
+    <code>llm-handoff</code> and the <code>session-handoff</code> skill in
+    <code>agent-toolkit</code> use a durable markdown artifact, closer in spirit to this
+    work. Neither validates a freshness anchor against live repository state or runs a
+    verification command; both are unscored.
+  </p>
+  <p>
+    <strong>Deterministic scoring of agent context files.</strong> Schliff scores
+    <code>AGENTS.md</code>/<code>CLAUDE.md</code>-style instruction files 0&ndash;100
+    deterministically, with anti-gaming measures &mdash; the closest prior art to our
+    STRUCTURE layer. It scores static instruction quality; it does not check a document
+    against live repository state, and nothing in it executes.
+  </p>
+  <p>
+    <strong>Context and memory persistence.</strong> MemGPT <span class="footnote">[Packer
+    et al., arXiv:2310.08560]</span> and its production successor Letta manage long-running
+    memory within a single continuing agent via virtual context paging between fast and
+    slow memory tiers. This addresses within-agent memory capacity; it is not a discrete,
+    auditable transfer between independent agent processes, and carries no freshness
+    anchor a receiver can check against a repository that has since moved.
+  </p>
+  <p>
+    <strong>Benchmarks.</strong> SWE-bench <span class="footnote">[Jimenez et al.,
+    arXiv:2310.06770]</span> established the now-standard genre this work's benchmark
+    belongs to: real GitHub issues and their merged pull requests as ground truth for
+    whether an agent resolved a repository-grounded task. Its direct descendant, SWE
+    Context Bench <span class="footnote">[Zhu et al., arXiv:2602.08316]</span>, is the
+    closest sibling to our benchmark specifically: it measures whether coding agents
+    improve on a task by reusing summarized experience from related prior tasks, across
+    1,100 base tasks and 376 related tasks spanning 51 repositories. Both measure task
+    resolution or context <em>reuse</em> in aggregate; neither plants a specific
+    adversarial trap and measures whether a single transferred artifact steers an agent
+    away from it. To our knowledge no existing benchmark does. Separately, work on negative
+    knowledge as a failure-aware shared memory for autonomous research agents
+    <span class="footnote">[Wang, arXiv:2606.21024]</span> argues, in a different domain
+    (scientific research agents rather than coding agents), that failed attempts should
+    be curated into typed, explicitly adopted-or-rejected records rather than discarded
+    &mdash; a conceptual match for our &sect;2b priority on negative knowledge, applied
+    here to repository handoffs and made machine-checkable rather than curator-mediated.
+  </p>
+
+  <h2><span class="section-num">3</span>The Handover Protocol</h2>
+  <p>
+    The protocol serves one invariant: <em>a handoff is lossless if and only if a cold
+    agent &mdash; given only the artifact and repository access, and nothing from prior
+    conversation &mdash; reaches the same decisions the sender would; it is seamless if
+    and only if the receiver's first action is unambiguous.</em> Every rule in the
+    protocol exists to protect that sentence.
+  </p>
+  <p>
+    Two ideas are load-bearing. First, every assertion is a claim, not a fact: a handoff
+    records belief at a moment, and belief drifts from reality, so every state claim must
+    carry either a verify command or an explicit <code>[belief, unverified]</code> tag.
+    Second, negative knowledge is the irreducible core: positive state is re-derivable by
+    reading code, but what was tried and abandoned, deliberately left unbuilt, or built
+    and reverted is not &mdash; so when a handoff must be cut for length, positive state
+    is cut first.
+  </p>
+  <p>
+    A Handover document is a strict, machine-validated YAML header followed by a
+    human-authored prose body linted loosely (fenced code and blockquotes masked, so
+    quoted or illustrative text cannot trip the checks meant for live assertions). The
+    header carries seven required fields:
+  </p>
+  <table>
+    <tr><th>Field</th><th>Purpose</th></tr>
+    <tr><td><code>true_at_sha</code></td><td>the freshness anchor &mdash; the commit the claims below were true at</td></tr>
+    <tr><td><code>first_action</code></td><td>exactly one unambiguous next step</td></tr>
+    <tr><td><code>verify_cmd</code></td><td>the command that proves the whole state still holds</td></tr>
+    <tr><td><code>status</code></td><td><code>in_progress</code> or <code>done</code> &mdash; <code>done</code> is refused without a non-empty <code>verify_cmd</code></td></tr>
+    <tr><td><code>supersedes</code></td><td>explicit pointer when a newer doc replaces an older one</td></tr>
+    <tr><td><code>handoff</code>, <code>shape</code></td><td>workstream identity and interaction shape (handoff / delegation / broadcast)</td></tr>
+  </table>
+  <p>
+    Nine hard rules (H1&ndash;H9) make the protocol's MUSTs testable: self-containment (no
+    reliance on chat history), claims-carry-checks, absolute dates, addressable
+    references (URLs and SHAs, never bare names), one first action, explicit
+    supersession, a freshness stamp, no silent &ldquo;done,&rdquo; and a deterministic,
+    discoverable file location. Each is either gate-checkable or lint-scorable, which is
+    what makes the protocol enforceable rather than aspirational.
+  </p>
+
+  <h2><span class="section-num">4</span>Deterministic Verification</h2>
+  <p>
+    A score has to say what it is scoring. We split the lint output into two layers with
+    different trust values, because only one of them can be judged from the text alone.
+  </p>
+  <h3>4.1 STRUCTURE &mdash; the deterministic 0&ndash;100 rubric</h3>
+  <p>
+    Pure text analysis; same input, same score; proves a document is <em>built to be
+    checkable</em>, never that a claim is <em>true</em>.
+  </p>
+  <table>
+    <tr><th>Component</th><th>Points</th><th>What it checks</th></tr>
+    <tr><td>Header validity</td><td class="num">45</td><td>all seven required fields present and well-formed; placeholders (<code>FILL IN</code>, <code>TBD</code>) fail</td></tr>
+    <tr><td>Negative knowledge</td><td class="num">20</td><td>5 per &sect;2b category, counted only with real content on its own line &mdash; keyword-stuffing scores 0</td></tr>
+    <tr><td>Section completeness</td><td class="num">15</td><td>canonical sources, a marked next action, a verification section &mdash; detected only on structural lines</td></tr>
+    <tr><td>Self-containment</td><td class="num">12</td><td>&minus;6 per distinct H1/injection violation, floored at 0</td></tr>
+    <tr><td>Prose cleanliness</td><td class="num">8</td><td>&minus;2 per H3/H4 nit (relative dates, bare issue refs), floored at 0</td></tr>
+  </table>
+  <h3>4.2 VERIFICATION &mdash; repository-aware truth checks (opt-in)</h3>
+  <p>
+    Structure cannot know whether <code>true_at_sha</code> is real or whether
+    <code>status: done</code> is earned. The verification layer can, but only inside the
+    document's own repository, so it is opt-in: <code>--repo</code> confirms the anchor
+    commit exists (a fabricated or foreign SHA fails), computes drift via
+    <code>git rev-list</code>, and flags a future date; <code>--verify</code> additionally
+    runs <code>verify_cmd</code> &mdash; the only check that converts &ldquo;done&rdquo;
+    from belief to fact; <code>--claims</code> goes further, running <em>each</em> claim
+    row's own verify command and localizing which specific claims no longer hold rather
+    than invalidating the document as a whole. All repository probes run without a shell
+    (<code>execFileSync</code>, never string interpolation), so a hostile document's
+    header can never itself execute &mdash; only the document's own declared commands run,
+    and only when a human opts in.
+  </p>
+
+  <h2><span class="section-num">5</span>The Trap-Based Benchmark</h2>
+  <p>
+    Lint measures whether a document is well-formed. It cannot measure whether the
+    document actually stops a cold agent from making a mistake the sender already made.
+    For that we plant deliberate traps.
+  </p>
+  <p>
+    A trap associates a detectable repository state with (a) a <code>guard_pattern</code>
+    &mdash; a regular expression checked against a candidate artifact's text, the
+    deterministic proxy layer &mdash; and (b) a <code>detect_fell_in</code> probe, an
+    executable check run against the repository after an agent has acted, the empirical
+    layer. The deterministic layer answers a necessary-condition question (does the
+    artifact even mention the guard?) cheaply and repeatably; the empirical layer answers
+    the sufficient-condition question (did a real agent actually avoid it?) at the cost of
+    running a real trial.
+  </p>
+  <p>
+    Three scenarios ship with this release, nine traps total:
+  </p>
+  <table>
+    <tr><th>Scenario</th><th>Traps (by kind)</th></tr>
+    <tr><td><code>reverted-feature</code></td><td>reverted-do-not-re-add (client-side pricing); tried-and-failed (reused member data model); ambiguous-next-action (migration-vs-route order)</td></tr>
+    <tr><td><code>failed-dependency-upgrade</code></td><td>tried-and-failed (a dependency major-version bump); reverted-do-not-re-add (a shim that looks dead but isn't); ambiguous-next-action (a misleading first test failure)</td></tr>
+    <tr><td><code>descoped-admin-export</code></td><td>deliberately-out-of-scope (a compliance-blocked export feature); decision-relitigation (a settled library choice); reverted-do-not-re-add (a client-side cache)</td></tr>
+  </table>
+  <p>
+    Scenario authoring follows one rule for the deterministic proxy specifically: traps
+    are written from an observed failure mode <em>before</em> the compliant artifact is
+    drafted. Deriving <code>guard_pattern</code> from an artifact already written reverses
+    the direction of evidence and turns the proxy layer into a self-fulfilling regex.
+    &sect;7 reports two related but distinct measurement-integrity failures in the
+    empirical layer &mdash; negative knowledge leaking into fixture source code, and a
+    detection probe keyed to identifiers no trial used &mdash; neither of which is a
+    <code>guard_pattern</code>-circularity problem; we separate them here rather than
+    treat &ldquo;author traps first&rdquo; as a fix for every way a trap-based benchmark
+    can fail.
+  </p>
+
+  <h2><span class="section-num">6</span>Deterministic Results</h2>
+  <p>
+    Across all three scenarios, a protocol-compliant artifact and a naive
+    &ldquo;session-notes&rdquo;-style summary score as follows: STRUCTURE score, header
+    validity, deterministic trap coverage, and a combined <em>quality</em> metric equal to
+    the mean of the STRUCTURE score and the trap-coverage percentage (validity is not a
+    separate weighted term; it correlates with STRUCTURE score, since an invalid header
+    already caps that score low):
+  </p>
+  <table>
+    <tr><th>Scenario</th><th>Artifact</th><th>Score</th><th>Valid</th><th>Traps covered</th><th>Quality</th></tr>
+    <tr><td>reverted-feature</td><td>good</td><td class="num">100/100</td><td>yes</td><td class="num">3/3</td><td class="num">100/100</td></tr>
+    <tr><td></td><td>bad</td><td class="num">16/100</td><td>no</td><td class="num">0/3</td><td class="num">8/100</td></tr>
+    <tr><td>failed-dependency-upgrade</td><td>good</td><td class="num">100/100</td><td>yes</td><td class="num">3/3</td><td class="num">100/100</td></tr>
+    <tr><td></td><td>bad</td><td class="num">8/100</td><td>no</td><td class="num">0/3</td><td class="num">4/100</td></tr>
+    <tr><td>descoped-admin-export</td><td>good</td><td class="num">100/100</td><td>yes</td><td class="num">3/3</td><td class="num">100/100</td></tr>
+    <tr><td></td><td>bad</td><td class="num">12/100</td><td>no</td><td class="num">0/3</td><td class="num">6/100</td></tr>
+  </table>
+  <p>
+    This layer is honest about its own limit: it checks that the negative-knowledge
+    warning is <em>present in the text</em>, not that a receiving agent obeys it. It is
+    the necessary-condition half of the measurement; &sect;7 is the sufficient-condition
+    half.
+  </p>
+
+  <h2><span class="section-num">7</span>Empirical Pilot</h2>
+  <p>
+    We report the full trajectory of a first agent-in-the-loop pilot on the
+    <code>reverted-feature</code> scenario, including a methodological failure and its
+    fix, rather than only the final result. A benchmark paper that reports a clean result
+    without describing how the measurement was made trustworthy is asking to be taken on
+    faith; we would rather not ask that.
+  </p>
+  <h3>7.1 Setup</h3>
+  <p>
+    We materialized <code>reverted-feature</code>'s premise as a real, small TypeScript
+    fixture repository (a stubbed API route, a pending SQL migration, a member data
+    model, a pricing module, a frontend summary component, a test suite) &mdash;
+    previously the scenario existed only as artifact text and an abstract premise. Three
+    fresh copies were prepared, each with its own git history seeded from one identical
+    initial commit, differing only in what a cold agent receives at the repository root:
+    the protocol-compliant artifact (<em>good</em>), a realistic misleading
+    &ldquo;session notes&rdquo; summary that actively points toward two of the three
+    traps (<em>bad</em>), or nothing (<em>none</em>, the control). A single model
+    (claude-sonnet-5, via the Claude Agent SDK) was given an identical task description
+    &mdash; finish wiring guest checkout end to end &mdash; and worked to completion in
+    each condition, one trial per condition (n=1). We report this scope precisely because
+    it does not license a general claim; it is a pilot, not a study.
+  </p>
+  <h3>7.2 A confounded first run, and why</h3>
+  <p>
+    The first materialized fixture leaked the answer to every trap directly into its own
+    source comments: the pricing module read, in part, <em>&ldquo;Do not add a
+    client-side total &mdash; see the guest-checkout handover doc's negative-knowledge
+    section.&rdquo;</em> All three conditions &mdash; including the no-artifact control
+    &mdash; avoided every trap, because any agent reading the code saw the negative
+    knowledge regardless of what artifact, if any, it had been given. A second and third
+    flaw compounded it: the task prompt stated the correct migration-then-route order
+    directly, removing the ambiguity the third trap was meant to test; and the
+    &ldquo;applied&rdquo; state for the migration was never wired to anything a probe
+    could mechanically check, so that trap's detector could not fire under any outcome.
+  </p>
+  <h3>7.3 The fix</h3>
+  <p>
+    Every &ldquo;do not X&rdquo; and &ldquo;this was reverted because&rdquo; comment was
+    removed from the fixture's source files; negative knowledge was left to live only in
+    the compliant artifact, never in code an agent can read independent of condition. The
+    migration-apply step was made mechanically real rather than documentary: a small
+    script records applied migrations to a JSON marker, and the data-access module
+    genuinely throws if used before that marker exists &mdash; a naive agent that skips
+    the migration now hits a real failure, not a missing comment. The task prompt was
+    rewritten to state the goal without specifying step order. The second scenario's
+    <code>detect_fell_in</code> probe, which had matched the substring
+    &ldquo;nullable&rdquo; even inside a negated sentence (&ldquo;do not make user\_id
+    nullable&rdquo;), was corrected to check the target field's actual type signature.
+  </p>
+  <h3>7.4 Result</h3>
+  <p>
+    With the fixed fixture, three fresh trials were run and verified against the actual
+    probes &mdash; not the agents' self-reports:
+  </p>
+  <table>
+    <tr><th>Condition</th><th>Trap 1 &mdash; client-side pricing</th><th>Trap 2 &mdash; reused data model</th><th>Trap 3 &mdash; migration order</th></tr>
+    <tr><td>good (compliant artifact)</td><td class="avoided">avoided</td><td class="avoided">avoided</td><td class="avoided">avoided</td></tr>
+    <tr><td>bad (misleading summary)</td><td class="fell-in">fell in</td><td class="avoided">avoided</td><td class="avoided">avoided</td></tr>
+    <tr><td>none (control)</td><td class="fell-in">fell in</td><td class="avoided">avoided</td><td class="avoided">avoided</td></tr>
+  </table>
+  <p>
+    Trap 1 discriminates: the compliant artifact was the only one of three conditions
+    that did not reintroduce a previously-reverted bug &mdash; both the misleading
+    summary and no artifact at all led the agent to import the server's pricing function
+    directly into frontend code, architecturally reintroducing the exact class of bug
+    (client and server able to disagree on tax/rounding) the original revert was about,
+    even though neither trial used the specific function name our first
+    <code>detect_fell_in</code> probe checked for. That probe (originally matching the
+    literal identifiers <code>computeTotalClientSide</code>/<code>clientTotal</code>) was
+    corrected, during verification, to check the real architectural signal &mdash; any
+    frontend import of the server pricing module &mdash; and re-run against the same
+    completed trials without needing new agent runs.
+  </p>
+  <p>
+    Traps 2 and 3 show no discrimination at this scale. For trap 2, the fixed fixture's
+    own pre-built data-access module (added to make trap 3 mechanically real) gave every
+    condition an obviously easier correct path than touching the shared data model,
+    independent of which artifact it received &mdash; a real methodological tradeoff the
+    fix introduced, reported rather than hidden. For trap 3, this model sequenced the
+    migration before the route in all three conditions regardless of artifact; whether
+    that reflects a capable model not needing the hint for this particular trap, or a
+    probe still not sensitive enough, is genuinely unresolved at n=1 and left as an open
+    question for &sect;9.
+  </p>
+
+  <h2><span class="section-num">8</span>Discussion and Limitations</h2>
+  <ul>
+    <li><strong>Small n throughout.</strong> Three scenarios; one pilot scenario; one
+    trial per condition; one model. None of this licenses a general claim about
+    &ldquo;does Handover work&rdquo; &mdash; it licenses the narrower, real claim that a
+    protocol-compliant artifact produced one measurable, discriminating effect in one
+    trial, and that building a fair trap-based fixture is harder than it first appears.</li>
+    <li><strong>The proxy and the empirical layer can disagree, and did not obviously
+    agree here either.</strong> The deterministic layer only checks text presence in the
+    artifact, not repository outcome; a full accounting of where the two layers agree and
+    disagree, across more trials, is future work rather than something this pilot settled.</li>
+    <li><strong>The &sect;6 deterministic comparison is same-author, same-scorer.</strong>
+    Both the compliant and naive artifacts in every scenario, and the scorer that grades
+    them, were built by this paper's author. The 100-vs-below-20 separation is real and
+    reproducible, but it is closer to a unit test of the scorer against artifacts it was
+    designed to distinguish than to independent evidence about naive summaries a different
+    author would actually write. This is distinct from the next limitation (STRUCTURE
+    being gameable by a dishonest author) &mdash; that concerns adversarial gaming; this
+    concerns ordinary authorship bias in constructing the evaluation itself.</li>
+    <li><strong>STRUCTURE is gameable by construction.</strong> A fluent, dishonest
+    author can write four plausible negative-knowledge lines that are false; only the
+    VERIFICATION layer, run by a receiver who chooses to run it, and a human reading the
+    prose, judge truth. This is documented as a design limitation, not discovered as a
+    flaw.</li>
+    <li><strong>Ecosystem and language bias.</strong> All three scenarios are
+    Node/TypeScript-flavored and in English; whether the protocol and benchmark transfer
+    to other ecosystems is untested.</li>
+    <li><strong>Single-model empirical layer.</strong> No comparison across model
+    capability tiers exists yet; whether weaker models show discrimination on traps 2 and
+    3 where this model did not is an open, answerable question, not yet answered.</li>
+  </ul>
+
+  <h2><span class="section-num">9</span>Future Work</h2>
+  <p>
+    A multi-model, multi-repeat empirical study across all three scenarios is the direct
+    next step, sized to actually answer whether traps 2 and 3's null result at n=1 is a
+    fixture property or a capability property. Additional scenarios, in other ecosystems,
+    would test whether the protocol's benefit generalizes past a Node/TypeScript
+    fixture. The per-claim localization mechanism (<code>--claims</code>, &sect;4.2) is
+    itself a measurable claim &mdash; whether localized drift reporting changes what a
+    receiving agent does differently from whole-document staleness &mdash; not yet
+    studied here.
+  </p>
+
+  <h2><span class="section-num">10</span>Conclusion</h2>
+  <p>
+    Handover is released as a protocol specification, a zero-dependency deterministic
+    CLI (lint, scaffold, and bench), and three benchmark scenarios, all under Apache-2.0.
+    The deterministic layer shows a large, reliable separation between compliant and
+    naive artifacts across all three scenarios. The empirical layer, run once, honestly,
+    end to end, shows one real discriminating signal and two null results with documented
+    reasons &mdash; and, arguably as valuable, two concrete methodological lessons for
+    anyone building this class of trap-based benchmark: negative knowledge must live only
+    in the artifact under test, and a detection probe keyed to specific literal
+    identifiers will miss the same violation expressed a different way.
+  </p>
+
+  <h2 style="margin-top:24px;">References</h2>
+  <div class="refs">
+    <p>Jimenez, C. E., Yang, J., Wettig, A., Yao, S., Pei, K., Press, O., &amp; Narasimhan, K. (2023). SWE-bench: Can Language Models Resolve Real-World GitHub Issues? arXiv:2310.06770.</p>
+    <p>Packer, C., Wooders, S., Lin, K., Fang, V., Patil, S. G., Stoica, I., &amp; Gonzalez, J. E. (2023). MemGPT: Towards LLMs as Operating Systems. arXiv:2310.08560.</p>
+    <p>Wang, H. (2026). Negative Knowledge as Failure-aware Shared Memory for AutoResearch. arXiv:2606.21024.</p>
+    <p>Wu, Q., Bansal, G., Zhang, J., Wu, Y., et al. (2023). AutoGen: Enabling Next-Gen LLM Applications via Multi-Agent Conversation. arXiv:2308.08155.</p>
+    <p>Zhu, J., Wu, J., Hu, M., Zhu, S., Pan, J., Shen, W., Yang, Y., Liu, F., Hao, J., Jin, Y., Ho, Q., &amp; Xu, M. (2026). SWE Context Bench: A Benchmark for Context Learning in Coding. arXiv:2602.08316.</p>
+  </div>
+
+</div>
+</body>
+</html>

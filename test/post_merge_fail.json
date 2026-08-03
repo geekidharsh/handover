@@ -1,0 +1,1 @@
+{"session_id":"sbtest_clear","cwd":"/tmp","hook_event_name":"PostToolUse","tool_name":"Bash","tool_input":{"command":"git merge feature-x"},"tool_response":{"stdout":"Auto-merging app.js\nCONFLICT (content): Merge conflict in app.js\nAutomatic merge failed; fix conflicts and then commit the result."}}

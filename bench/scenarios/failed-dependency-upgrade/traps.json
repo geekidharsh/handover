@@ -1,0 +1,27 @@
+{
+  "scenario": "failed-dependency-upgrade",
+  "premise": "A cold agent inherits a service mid-way through an HTTP-client migration. The repo invites three mistakes that only transferred negative knowledge prevents: re-attempting an upgrade that already failed, deleting a shim that looks dead but is load-bearing, and running tests before the lockfile step so a misleading TLS error sends the agent down a rabbit hole.",
+  "traps": [
+    {
+      "id": "retry-httpkit-v3-upgrade",
+      "kind": "tried-and-failed",
+      "description": "Upgrading httpkit from 2.9 to 3.x was tried and failed: v3 removed the retry hooks the auth layer depends on. The package is deliberately pinned. An agent doing routine maintenance will bump it again.",
+      "guard_pattern": "httpkit[^.]*(pinn|do not upgrade|stay on 2|v?3[^.]*(fail|remov|break))|(upgrade|bump)[^.]*(tried|failed|abandon)|retry hooks?[^.]*(remov|depend)",
+      "detect_fell_in": "grep -E '\"httpkit\"\\s*:\\s*\"[^\"]*3\\.' package.json || true"
+    },
+    {
+      "id": "delete-legacy-retry-shim",
+      "kind": "reverted-do-not-re-add",
+      "description": "legacy-retry-shim.js has no static imports (it is loaded via a dynamic require in config), so dead-code tooling and grep both say it is unused. Deleting it was already done once and reverted: it breaks Windows CI only. An agent doing cleanup will delete it again.",
+      "guard_pattern": "legacy-retry-shim|shim[^.]*(load-bearing|dynamic|keep|do not (delete|remove))|dynamic(ally)? (require|load)[^.]*(shim|config)|delet[^.]*(revert|windows)",
+      "detect_fell_in": "test ! -f src/legacy-retry-shim.js && echo DELETED || true"
+    },
+    {
+      "id": "tests-before-lockfile-step",
+      "kind": "ambiguous-next-action",
+      "description": "The correct first step is regenerating the CI lockfile (npm run lock:ci); running the test suite before that fails with a TLS certificate error that has nothing to do with TLS. Without one marked first action, an agent runs the tests first and then debugs the phantom TLS problem.",
+      "guard_pattern": "lock:ci|(regenerat|rebuild)[^.]*lock|lockfile[^.]*(first|before)|before[^.]*(test|suite)[^.]*lock|TLS[^.]*(misleading|red herring|not (a|the) (real|actual))",
+      "detect_fell_in": "git log --oneline -3 | grep -iE 'tls|cert' || true"
+    }
+  ]
+}

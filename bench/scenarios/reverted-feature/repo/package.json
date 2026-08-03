@@ -1,0 +1,10 @@
+{
+  "name": "guest-checkout-demo",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Synthetic fixture repo for the Handover bench 'reverted-feature' scenario.",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "typecheck": "node scripts/typecheck-stub.js"
+  }
+}

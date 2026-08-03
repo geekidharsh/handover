@@ -1,0 +1,1 @@
+{"session_id":"sbtest10","cwd":"/tmp/handover-example-fixture","hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"command":"gh pr merge 42 --squash"}}

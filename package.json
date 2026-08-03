@@ -1,0 +1,49 @@
+{
+  "name": "handover-protocol",
+  "version": "0.4.0",
+  "description": "An enforced agent-to-agent handover document: strict validated header + prose body, with deterministic lint and bench tooling. No LLM, no network, zero dependencies.",
+  "license": "Apache-2.0",
+  "author": {
+    "name": "Harshvardhan Pandey"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/geekidharsh/handover.git"
+  },
+  "bugs": {
+    "url": "https://github.com/geekidharsh/handover/issues"
+  },
+  "homepage": "https://github.com/geekidharsh/handover#readme",
+  "keywords": [
+    "ai-agents",
+    "agent-handoff",
+    "context-handoff",
+    "claude-code",
+    "claude-code-plugin",
+    "lint",
+    "deterministic"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "bin": {
+    "handover-lint": "bin/handover-lint.js",
+    "handover-scaffold": "bin/handover-scaffold.js"
+  },
+  "files": [
+    "bin/",
+    "bench/",
+    "templates/",
+    "examples/handover.example.md",
+    "PROTOCOL.md",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE",
+    "NOTICE",
+    "CITATION.cff"
+  ],
+  "scripts": {
+    "test": "./test/run.sh",
+    "bench": "node bench/run.js"
+  }
+}

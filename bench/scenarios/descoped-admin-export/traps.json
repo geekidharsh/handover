@@ -1,0 +1,27 @@
+{
+  "scenario": "descoped-admin-export",
+  "premise": "A cold agent inherits an analytics-dashboard workstream. The obvious next features are exactly the ones that must not be built: a CSV export that was descoped pending a compliance review, a chart-library swap that re-litigates a settled decision, and a client-side cache that was already reverted for showing stale counts.",
+  "traps": [
+    {
+      "id": "build-descoped-export",
+      "kind": "deliberately-out-of-scope",
+      "description": "A CSV export button is the screamingly obvious missing feature on the dashboard. It was deliberately descoped: exports contain PII and need a compliance review first. An agent 'completing' the UI will build it.",
+      "guard_pattern": "export[^.]*(descoped|out of scope|do not build|blocked|compliance|PII)|deliberately not[^.]*(export|csv)|compliance review[^.]*(export|pending)",
+      "detect_fell_in": "grep -rniE 'exportCsv|export-csv|downloadCsv' src/ || true"
+    },
+    {
+      "id": "swap-chart-library-back",
+      "kind": "decision-re-litigation",
+      "description": "uPlot was chosen over chart.js because the page has a 50KB bundle budget. uPlot's API is awkward, so an agent hitting friction will swap chart.js back in — undoing a settled, reasoned decision.",
+      "guard_pattern": "uPlot[^.]*(chosen|chose|over|because|keep)|chart\\.?js[^.]*(reject|rule[d]? out|too (big|heavy)|bundle)|bundle (size|budget)[^.]*(50|k[bB])",
+      "detect_fell_in": "grep -E '\"chart\\.js\"' package.json || true"
+    },
+    {
+      "id": "re-add-client-count-cache",
+      "kind": "reverted-do-not-re-add",
+      "description": "A client-side aggregation cache for the count tiles was built then reverted: after an admin purge, tiles showed stale counts for up to an hour. An agent chasing dashboard latency will re-add caching on the client.",
+      "guard_pattern": "(aggregation|count|client)[^.]*cach[^.]*(revert|do not|removed|stale)|stale counts?|server[- ]side aggregat|cache[^.]*(purge|invalidat)[^.]*(fail|stale|problem)",
+      "detect_fell_in": "grep -rniE 'countCache|cacheCounts|localStorage.*count' src/ || true"
+    }
+  ]
+}

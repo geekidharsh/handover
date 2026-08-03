@@ -1,0 +1,1 @@
+{"session_id":"sbtest5","cwd":"/tmp","hook_event_name":"PreToolUse","tool_name":"Bash","tool_input":{"command":"psql $DATABASE_URL -c 'TRUNCATE user_sessions'"}}

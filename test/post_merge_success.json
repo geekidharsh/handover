@@ -1,0 +1,1 @@
+{"session_id":"sbtest_clear","cwd":"/tmp","hook_event_name":"PostToolUse","tool_name":"Bash","tool_input":{"command":"git merge feature-x"},"tool_response":{"stdout":"Merge made by the 'ort' strategy.\n app.js | 2 +-"}}

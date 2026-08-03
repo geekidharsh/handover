@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use Handover — the protocol, the lint/scaffold tooling, or the bench — please cite it as below."
+title: "Handover: An Enforced Agent-to-Agent Handover Document"
+type: software
+authors:
+  - family-names: Pandey
+    given-names: Harshvardhan
+repository-code: "https://github.com/geekidharsh/handover"
+url: "https://github.com/geekidharsh/handover"
+license: Apache-2.0
+version: "0.4.0"

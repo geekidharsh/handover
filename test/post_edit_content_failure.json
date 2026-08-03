@@ -1,0 +1,1 @@
+{"session_id":"sbtest_edit","cwd":"/tmp","hook_event_name":"PostToolUse","tool_name":"Edit","tool_input":{"file_path":"/tmp/notes.md"},"tool_response":{"filePath":"/tmp/notes.md","structuredPatch":[{"lines":["+the loop detector fires on the second identical failure or merge conflict"]}]}}

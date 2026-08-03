@@ -1,0 +1,13 @@
+{
+  "name": "handover",
+  "owner": {
+    "name": "Harshvardhan Pandey"
+  },
+  "plugins": [
+    {
+      "name": "handover",
+      "source": "./",
+      "description": "An enforced agent-to-agent handover document with deterministic lint, repo-aware verification, and a transfer bench. Plus a separable behavioral gate."
+    }
+  ]
+}

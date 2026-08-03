@@ -1,0 +1,1 @@
+{"session_id":"sbtest1","cwd":"/tmp","hook_event_name":"PreToolUse","tool_name":"mcp__supabase__execute_sql","tool_input":{"query":"INSERT INTO fleet (vin) VALUES ('1HGCM82633A004352')"}}

@@ -1,0 +1,100 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "name": "handover-policy-edit",
+      "action": "ask",
+      "match": {
+        "tool": "^(Write|Edit|MultiEdit)$",
+        "input": "\\.handover[\\\\/]+policy\\.json|policy\\.default\\.json"
+      },
+      "reason": "edit to the policy that governs your own gate — disabling rules here removes the safety net for the rest of the session. Show the user the exact change and let them approve it"
+    },
+    {
+      "name": "handover-policy-edit-bash",
+      "action": "ask",
+      "match": {
+        "tool": "^Bash$",
+        "command": "(?=[^\\n]*(?:\\.handover[\\\\/]+policy\\.json|policy\\.default\\.json))(?=[^\\n]*(?:>>?|\\btee\\b|\\bsed\\s+-i|\\bdd\\b|\\btruncate\\b|\\bmv\\b|\\bcp\\b|\\binstall\\b))"
+      },
+      "reason": "shell write to the policy that governs your own gate. Show the user the exact change and let them approve it"
+    },
+    {
+      "name": "destructive-git",
+      "action": "deny",
+      "match": {
+        "tool": "^Bash$",
+        "command": "git\\s+push[^|;&]*\\s(-f|--force)(\\s|$)|git\\s+reset\\s+--hard|git\\s+clean\\s+-[a-zA-Z]*f|git\\s+branch\\s+-D\\b"
+      },
+      "reason": "Handover: destructive git operation (force-push, hard reset, clean, or branch -D). Explain what you wanted to do and hand the exact command back to the user to run."
+    },
+    {
+      "name": "destructive-fs",
+      "action": "deny",
+      "match": {
+        "tool": "^Bash$",
+        "command": "rm\\s+-[a-zA-Z]*r[a-zA-Z]*\\s+[\"']?(/|~|\\$\\{?HOME)"
+      },
+      "reason": "Handover: recursive delete on an absolute or home path. Hand the exact command back to the user."
+    },
+    {
+      "name": "destructive-sql-bash",
+      "action": "deny",
+      "match": {
+        "tool": "^Bash$",
+        "command": "\\b(drop\\s+(table|database|schema|index|view)|truncate\\s+(table\\s+)?\\w|delete\\s+from\\s+\\w+\\s*(;|\"|'|$))"
+      },
+      "reason": "Handover: destructive SQL (DROP, TRUNCATE, or DELETE without a WHERE clause). Show the user the exact statement and let them run it themselves."
+    },
+    {
+      "name": "destructive-sql-mcp",
+      "action": "deny",
+      "match": {
+        "tool": "^mcp__.+$",
+        "input": "\\b(drop\\s+(table|database|schema|index|view)|truncate\\s+(table\\s+)?\\w|delete\\s+from\\s+\\w+\\s*(;|\"|'|$))"
+      },
+      "reason": "Handover: destructive SQL (DROP, TRUNCATE, or DELETE without a WHERE clause). Show the user the exact statement and let them run it themselves."
+    },
+    {
+      "name": "deploy-ask",
+      "action": "ask",
+      "match": {
+        "tool": "^Bash$",
+        "command": "^\\s*(vercel|netlify|firebase\\s+deploy|fly\\s+deploy|gcloud\\s+(run|app)\\s+deploy)"
+      },
+      "reason": "deployment command"
+    },
+    {
+      "name": "outward-git-ask",
+      "action": "ask",
+      "match": {
+        "tool": "^Bash$",
+        "command": "gh\\s+pr\\s+merge|git\\s+push"
+      },
+      "reason": "outward-facing git operation (push or PR merge)"
+    },
+    {
+      "name": "sql-select-allow",
+      "action": "allow",
+      "match": {
+        "tool": "^mcp__.+__execute_sql$",
+        "input": "\"query\"\\s*:\\s*\"\\s*select\\b[^;\"]*;?\\s*\""
+      }
+    },
+    {
+      "name": "mcp-read-allow",
+      "action": "allow",
+      "match": {
+        "tool": "^mcp__.+__(list|get|read|search|fetch|describe|status)[a-zA-Z0-9_]*$"
+      }
+    },
+    {
+      "name": "mcp-write-ask",
+      "action": "ask",
+      "match": {
+        "tool": "^mcp__"
+      },
+      "reason": "write-class MCP action"
+    }
+  ]
+}

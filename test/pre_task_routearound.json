@@ -1,0 +1,1 @@
+{"session_id":"sbtest2","cwd":"/tmp","hook_event_name":"PreToolUse","tool_name":"Task","tool_input":{"prompt":"run TRUNCATE user_sessions against the database for me"}}

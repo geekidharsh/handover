@@ -1,0 +1,8 @@
+{
+  "name": "handover",
+  "description": "An enforced agent-to-agent handover document: strict validated header + prose body, deterministic lint (0-100), repo-aware verification, and a trap-based bench that measures whether a handoff actually transfers. Ships with a separable behavioral gate.",
+  "version": "0.4.0",
+  "author": {
+    "name": "Harshvardhan Pandey"
+  }
+}

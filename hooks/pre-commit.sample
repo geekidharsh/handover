@@ -1,0 +1,49 @@
+#!/bin/sh
+# Handover — harness-independent enforcement.
+#
+# A git pre-commit hook that validates every staged HANDOVER_*.md (or *.handover.md)
+# before it can land. Unlike hooks/*.js (which speak the Claude Code hook protocol),
+# this works in any repo with any agent — or none.
+#
+# Install:
+#   cp <handover>/hooks/pre-commit.sample .git/hooks/pre-commit
+#   chmod +x .git/hooks/pre-commit
+#   # then set HANDOVER_BIN below, or install the CLI globally (npm i -g)
+#
+# Bypass (deliberately possible — Handover tightens the default, it is not a lock):
+#   git commit --no-verify
+
+set -u
+
+# Where handover-lint lives. Prefer a PATH install; fall back to a checkout.
+if command -v handover-lint >/dev/null 2>&1; then
+  LINT="handover-lint"
+elif [ -n "${HANDOVER_BIN:-}" ] && [ -f "$HANDOVER_BIN/handover-lint.js" ]; then
+  LINT="node $HANDOVER_BIN/handover-lint.js"
+else
+  # Handover is not installed here — fail OPEN, never block a commit on our absence.
+  exit 0
+fi
+
+DOCS=$(git diff --cached --name-only --diff-filter=ACM | grep -E '(^|/)(HANDOVER_[^/]*\.md|[^/]*\.handover\.md)$' || true)
+[ -z "$DOCS" ] && exit 0
+
+# --min: structural floor. --repo: the SHA must exist and drift is surfaced.
+# Deliberately NOT --verify/--claims: a pre-commit hook must not execute commands
+# out of the document being committed. Run those yourself before handing off.
+MIN="${HANDOVER_MIN:-80}"
+RC=0
+for f in $DOCS; do
+  echo "handover: checking $f"
+  $LINT "$f" --repo --min="$MIN" || RC=1
+done
+
+if [ "$RC" -ne 0 ]; then
+  cat <<'EOF'
+
+handover: this handoff would not survive contact with a cold agent.
+Fix the errors above, or commit with --no-verify if you know what you are doing.
+Before you hand off for real, also run:  handover-lint <doc> --verify --claims --strict
+EOF
+fi
+exit $RC

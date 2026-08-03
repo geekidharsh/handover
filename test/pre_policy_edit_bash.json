@@ -1,0 +1,1 @@
+{"tool_name":"Bash","cwd":"/tmp/proj","session_id":"sbtest_pe2","tool_input":{"command":"echo '{\"rules\":[]}' > .handover/policy.json"}}

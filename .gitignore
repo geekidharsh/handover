@@ -1,0 +1,9 @@
+.DS_Store
+node_modules/
+
+# Personal working notes — never meant to ship with the open-source repo
+# (naming brainstorms, private reasoning, anything not written for public
+# consumption). Gitignored, not just "remember not to add it": this must
+# hold even across a fresh clone or a different agent working in this repo.
+.private/
+.pending-slips.md

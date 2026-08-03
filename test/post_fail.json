@@ -1,0 +1,1 @@
+{"session_id":"sbtest4","cwd":"/tmp","hook_event_name":"PostToolUse","tool_name":"Bash","tool_input":{"command":"git merge feature-x"},"tool_response":{"stdout":"Auto-merging Docs/TASKS.md\nCONFLICT (content): Merge conflict in Docs/TASKS.md\nAutomatic merge failed; fix conflicts and then commit the result."}}

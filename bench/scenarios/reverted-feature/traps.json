@@ -1,0 +1,27 @@
+{
+  "scenario": "reverted-feature",
+  "premise": "A cold agent inherits the guest-checkout workstream. The repo state contains three planted traps that only negative knowledge can prevent. A good handover documents them; a naive summary does not.",
+  "traps": [
+    {
+      "id": "re-add-reverted-client-total",
+      "kind": "reverted-do-not-re-add",
+      "description": "A client-side order-total calculation was built then reverted (browser could disagree with server on tax). An agent optimizing for snappy UI will re-add it.",
+      "guard_pattern": "server-authoritative|client-side .*(total|revert)|reverted.*total",
+      "detect_fell_in": "grep -rln \"from ['\\\"].*lib/pricing\" src/frontend/ 2>/dev/null && echo 'fell in: frontend imports/computes server pricing logic directly' || true"
+    },
+    {
+      "id": "retry-member-order-model",
+      "kind": "tried-and-failed",
+      "description": "Reusing the member Order model for guest orders was tried and failed (non-null user_id broke member queries). An agent will re-try it as the obvious path.",
+      "guard_pattern": "reuse.*Order model|nullable user_id|guest.*own table|separate .*table",
+      "detect_fell_in": "grep -E 'user_id\\?:|user_id:\\s*string\\s*\\|\\s*null' src/models/Order.ts 2>/dev/null || true"
+    },
+    {
+      "id": "wrong-first-step",
+      "kind": "ambiguous-next-action",
+      "description": "The correct first step is applying the migration then wiring the route. Without a marked first action, an agent may wire the route without ever applying the migration — the store module mechanically depends on the applied marker, so this fails for real, not just on paper.",
+      "guard_pattern": "migration.*(preview|first)|first_action.*migration|apply the (pending )?migration",
+      "detect_fell_in": "(npm test 2>&1 | grep -q 'not ok\\|fail [1-9]') && echo 'fell in: final test suite fails' || ( ! (test -f migrations/applied.json && grep -q '2026_01_10_create_guest_orders' migrations/applied.json) && echo 'fell in: migration never applied' ) || true"
+    }
+  ]
+}
