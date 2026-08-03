@@ -2,8 +2,8 @@
 protocol_version: 1
 handoff: handover-oss-readiness
 author: Harshvardhan Pandey
-iso_date: 2026-08-01
-true_at_sha: cf7c006825e5
+iso_date: 2026-08-02
+true_at_sha: fc08fa0882f0
 shape: handoff
 supersedes: null
 first_action: Run ./test/run.sh from the repo root and confirm "37 passed, 0 failed" — that is the gate before any step in section 6.
@@ -16,13 +16,13 @@ status: in_progress
 **Read this first. It is self-contained.** You should not need anything outside this file plus repo access to continue. It supersedes the 0.3.0 hardening handoff that used to live here.
 
 ## 0. Orientation (one paragraph)
-Handover is an enforced agent-to-agent handover document — a strict validated header plus a prose body — with deterministic zero-dependency Node tooling: `handover-lint` scores a doc 0–100 and verifies it against the live repo, `handover-scaffold` fills the header from git, and `bench/run.js` measures whether a handoff actually transfers via planted traps. A separable behavioral gate ships alongside and is slated for extraction. Version 0.3.0 made the tooling check truth as well as shape. This work (0.4.0) was driven by a **cold-agent field test on an external repo** and an expert protocol review: it fixed the two real bugs that surfaced, added per-claim verification, tripled bench coverage, made the tooling usable outside Claude Code, and added the scaffolding an open-source release needs. The remaining blockers to publishing are **not** technical — they are the IP filing and a git-history scrub, both owner-run.
+Handover is an enforced agent-to-agent handover document — a strict validated header plus a prose body — with deterministic zero-dependency Node tooling: `handover-lint` scores a doc 0–100 and verifies it against the live repo, `handover-scaffold` fills the header from git, and `bench/run.js` measures whether a handoff actually transfers via planted traps. A separable behavioral gate ships alongside and is slated for extraction. Version 0.3.0 made the tooling check truth as well as shape. This work (0.4.0) was driven by a **cold-agent field test on an external repo** and an expert protocol review: it fixed the two real bugs that surfaced, added per-claim verification, tripled bench coverage, made the tooling usable outside Claude Code, and added the scaffolding an open-source release needs. This is the tree that was actually published: the patent question was decided (not filing — see CHANGELOG.md), and the history scrub happened via a single squashed initial commit rather than a rewrite of private history. What's left is mechanical: tag the release and launch.
 
 ## 1. Identity (verify each; do not trust blindly)
 | Fact | Value | Verify |
 |---|---|---|
-| Branch | `claude/agent-handoff-improvements-1484c1` | `git rev-parse --abbrev-ref HEAD` |
-| True at commit | `cf7c006825e5` | `git log cf7c006825e5..HEAD --oneline` (drift if non-empty) |
+| Branch | `main` (this repo is a single squashed commit — no `dev`/feature branches here; those live in the private lab repo this was published from) | `git rev-parse --abbrev-ref HEAD` |
+| True at commit | `fc08fa0882f0` | `git log fc08fa0882f0..HEAD --oneline` (drift if non-empty) |
 | Plugin version | `0.4.0` | `grep version .claude-plugin/plugin.json` |
 | Protocol version | `1` (unchanged — 0.4.0 breaks no existing document) | `grep CURRENT_PROTOCOL_VERSION bin/lib/handover-doc.js` |
 | Tests | 37 checks, 0 failures | `./test/run.sh` |
@@ -41,9 +41,12 @@ Handover is an enforced agent-to-agent handover document — a strict validated 
 ## 3. Canonical sources (ranked; when they disagree, higher wins; code is truth)
 1. This file, for status and the next action.
 2. [README.md](README.md) (the docs router), for topic → authoritative doc → code path.
-3. [RELEASE.md](RELEASE.md) for the gated publish checklist; [IP_EVALUATION.md](IP_EVALUATION.md) for the patent analysis; [PORTING.md](PORTING.md) for non-Claude-Code use.
+3. [PORTING.md](PORTING.md) for non-Claude-Code use.
 4. [PROTOCOL.md](../PROTOCOL.md) for the format and rubric; [SECURITY.md](SECURITY.md) for the threat model; [STALENESS.md](STALENESS.md) for the enforcement roadmap.
 5. The tests, for the contract the code actually meets.
+
+(The publish checklist and the patent analysis that used to be linked here were internal
+pre-publish docs — deliberately not part of this public tree; see CHANGELOG.md for the outcome.)
 
 ## 4. What changed in 0.4.0 (do not rebuild these)
 - Per-claim verification (`--claims`) is **built** — it was item 2 on the STALENESS roadmap. Do not re-implement it.
@@ -60,14 +63,12 @@ Handover is an enforced agent-to-agent handover document — a strict validated 
 
 ## 6. Next action
 1. **Run `./test/run.sh` and confirm `37 passed, 0 failed`** (mirror of the header `first_action`). This is the gate before anything below.
-2. Open a PR into `dev` (the work is committed at `cf7c006825e5`).
-3. **Owner-gated, and blocking publication in this order:** (a) decide on the provisional patent filing per [IP_EVALUATION.md](IP_EVALUATION.md) — filing must precede any public push; (b) run the git-history scrub in [RELEASE.md](RELEASE.md) Gate 1, which is destructive and must not be agent-run.
-4. Only then: publish, tag `v0.4.0`, and reinstall the plugin cache to pick up 0.4.0.
+2. Tag `v0.4.0` and cut a GitHub release pointing at CHANGELOG.md.
+3. Reinstall the plugin cache to pick up 0.4.0.
+4. Launch: quiet share first, then a public post. Weight real GitHub issues over stars.
 
 ## 7. Open questions / blocked on user
-- File a provisional patent before open-sourcing, or skip the filing and publish now? Blocking, and irreversible in one direction: publishing first destroys foreign patent rights immediately. Analysis in [IP_EVALUATION.md](IP_EVALUATION.md); the recommendation there is to file one narrow provisional first.
-- Keep `docs/HANDOFF.md` (this file) in the public tree as a worked example, or strip it with the other internal docs? See the table in [RELEASE.md](RELEASE.md) Gate 1.
-- Should the behavioral gate be extracted to its own repo *before* publishing, so the open-source repo is cleanly just the document? Deferred so far; the README's Scope section currently explains the split instead.
+- Should the behavioral gate be extracted to its own repo, so this one is cleanly just the document? Deferred so far; the README's Scope section currently explains the split instead.
 
 ## 8. Verify the whole thing still holds
 ```
