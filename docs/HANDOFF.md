@@ -2,8 +2,8 @@
 protocol_version: 1
 handoff: handover-oss-readiness
 author: Harshvardhan Pandey
-iso_date: 2026-08-02
-true_at_sha: fc08fa0882f0
+iso_date: 2026-08-03
+true_at_sha: 9f5db38287fc
 shape: handoff
 supersedes: null
 first_action: Run ./test/run.sh from the repo root and confirm "37 passed, 0 failed" — that is the gate before any step in section 6.
@@ -22,7 +22,7 @@ Handover is an enforced agent-to-agent handover document — a strict validated 
 | Fact | Value | Verify |
 |---|---|---|
 | Branch | `main` (this repo is a single squashed commit — no `dev`/feature branches here; those live in the private lab repo this was published from) | `git rev-parse --abbrev-ref HEAD` |
-| True at commit | `fc08fa0882f0` | `git log fc08fa0882f0..HEAD --oneline` (drift if non-empty) |
+| True at commit | `9f5db38287fc` | `git log 9f5db38287fc..HEAD --oneline` (drift if non-empty) |
 | Plugin version | `0.4.0` | `grep version .claude-plugin/plugin.json` |
 | Protocol version | `1` (unchanged — 0.4.0 breaks no existing document) | `grep CURRENT_PROTOCOL_VERSION bin/lib/handover-doc.js` |
 | Tests | 37 checks, 0 failures | `./test/run.sh` |
@@ -53,6 +53,7 @@ files and are deliberately not part of this public tree.)
 - Bench scenarios went from 1 to 3, and `bench/README.md` now states the authoring rule. Do not add a scenario by deriving its `guard_pattern` from an existing good artifact.
 - `package.json`, CI, CONTRIBUTING, root SECURITY, CODE_OF_CONDUCT, and issue templates exist. Do not re-create them.
 - The README install command was fixed (it pointed at a legacy local path). Do not restore the old path.
+- Released and launched (2026-08-03): public since 2026-08-02, tagged `v0.4.0`, submitted to the Claude Code plugin marketplace, paper published, and six issues opened from the STALENESS roadmap. Do not re-tag or re-announce.
 
 ## 5. Negative knowledge (the irreducible core — if you must cut length, cut this last)
 - **Tried and failed:** the first cut of `--claims` extracted commands from **raw** document lines and armed any table whose last column merely *contained* "verif". Adversarial review proved two working command-execution escapes (a table inside a code fence; a "Verified By" roster column). The working approach is fence-**masked** lines plus an **exact** header match. Do not loosen either guard, and do not add a second parser that reads raw document text — that is how both holes appeared. Full write-up: SECURITY.md finding 4.
@@ -63,9 +64,9 @@ files and are deliberately not part of this public tree.)
 
 ## 6. Next action
 1. **Run `./test/run.sh` and confirm `37 passed, 0 failed`** (mirror of the header `first_action`). This is the gate before anything below.
-2. Tag `v0.4.0` and cut a GitHub release pointing at CHANGELOG.md.
+2. Work the open issues at https://github.com/geekidharsh/handover/issues, which are the STALENESS roadmap made visible. The highest-leverage one is still the hand-off-time verify gate (ranked first under "enforcement we should add" in [STALENESS.md](STALENESS.md)): as of 2026-08-03 verification is opt-in, and a `PreToolUse`/commit hook that refuses to publish a `status: done` handoff without a fresh passing `--verify` turns "should verify" into "did verify."
 3. Reinstall the plugin cache to pick up 0.4.0.
-4. Launch: quiet share first, then a public post. Weight real GitHub issues over stars.
+4. When the arXiv ID is announced, update the citation block in `README.md` and `CITATION.cff` with the real identifier and the announced primary category.
 
 ## 7. Open questions / blocked on user
 - Should the behavioral gate be extracted to its own repo, so this one is cleanly just the document? Deferred so far; the README's Scope section currently explains the split instead.
