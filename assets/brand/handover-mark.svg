@@ -1,0 +1,6 @@
+<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="currentColor" role="img" aria-label="Handover mark: H gate, checkmark exiting (refined from set-a-3)">
+  <rect x="14" y="9" width="8" height="46"/>
+  <rect x="40" y="9" width="8" height="46"/>
+  <rect x="18" y="27" width="22" height="10"/>
+  <polyline points="40,32 49,43 60,18" fill="none" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -1,3 +1,9 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/geekidharsh/handover/main/assets/brand/handover-mark-dark-128.png">
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/geekidharsh/handover/main/assets/brand/handover-mark-light-128.png">
+  <img alt="Handover" src="https://raw.githubusercontent.com/geekidharsh/handover/main/assets/brand/handover-mark-light-128.png" width="56" height="56">
+</picture>
+
 # Handover
 
 Claude Code, Cursor, and Codex forget everything between sessions. The next agent inherits a session summary nobody checked, re-derives what you already knew, and rebuilds what you deliberately threw away.
