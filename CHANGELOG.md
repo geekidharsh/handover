@@ -60,11 +60,7 @@ scaffolding an open-source release needs.
   artifact's wording**) and the pluggable empirical-runner contract.
 - **Open-source scaffolding:** `package.json` (npm/npx, `bin` entries, Node ≥18), CI
   across Linux/macOS × Node 18/20/22, `CONTRIBUTING.md` (with the four non-negotiable
-  invariants), root `SECURITY.md`, `CODE_OF_CONDUCT.md`, issue templates, and
-  `docs/RELEASE.md` (the gated publish checklist, including the history scrub).
-- **`docs/IP_EVALUATION.md`** — provisional-patent evaluation: prior-art sweep of agent
-  frameworks and patent databases, the adversarial §101/§103 case with citations, and the
-  file-before-publish sequencing constraint.
+  invariants), root `SECURITY.md`, `CODE_OF_CONDUCT.md`, and issue templates.
 
 ### Changed
 - README: the install command pointed at a legacy local path on the author's machine; it

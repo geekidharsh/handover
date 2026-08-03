@@ -1,14 +1,22 @@
 # Handover
 
-An enforced, **agent-to-agent handover document**: a strict validated header plus a human prose body, with deterministic tooling (lint + bench) that keeps it honest and measures whether a handoff actually transferred. The document, and the rules that keep it honest, *are* the product.
+Claude Code, Cursor, and Codex forget everything between sessions. The next agent inherits a session summary nobody checked, re-derives what you already knew, and rebuilds what you deliberately threw away.
+
+Handover is an **agent-to-agent handover document** with a header a machine can verify, plus deterministic tooling: a linter that scores it and checks it against the live repo, and a trap-based benchmark that measures whether the handoff actually transferred. The document, and the rules that keep it honest, *are* the product.
 
 No LLM in any enforcement path. No network. No telemetry. Zero dependencies (plain Node, which Claude Code already requires).
 
 ## Why this exists
 
-Agents forget everything between sessions, and nobody checks their handoff notes. A session ends; the next agent inherits a summary that says "see discussion above" — and there is no above. The reasons, the dead ends, and the deliberate non-decisions are gone with the context window. The successor re-derives what it can and rebuilds what it shouldn't.
+Agents forget everything between sessions, and nobody checks their handoff notes. A session ends, the next agent inherits a summary that says "see discussion above." There is no above. The reasons and the dead ends went out with the context window, so the successor re-derives what it can and rebuilds what it shouldn't.
 
-The fix is not a better summary. It is a document with rules that make the loss impossible to hide: every claim carries its own check, and the knowledge that *cannot* be re-derived from code — what was tried and failed, deliberately not built, or reverted and must not return — is the part the format protects hardest. Handover enforces those rules deterministically.
+A better summary doesn't fix this. What goes missing is the part you can't recover by reading the code: approaches that were tried and failed, things deliberately not built, changes that were reverted and must not come back. Handover makes that the load-bearing part of the document, and every claim in it carries its own check.
+
+### Why not just CLAUDE.md or AGENTS.md?
+
+Different jobs, and they compose rather than compete. `CLAUDE.md` and `AGENTS.md` are **standing context**: durable rules and project shape that are true every session, hand-maintained, read at startup. A Handover is **a transfer**: point-in-time state for one workstream, written at a session boundary, consumed once, then superseded.
+
+The operational difference is that a Handover is checkable and a context file isn't. It is anchored to a commit (`true_at_sha`), so drift since is measurable instead of assumed. It carries a `verify_cmd`, so `status: done` can be refused until that command actually passes. Nothing in `AGENTS.md` can go stale loudly, because nothing in it makes a falsifiable claim about repository state. That is the gap this fills. Keep your context files; this is the thing that hands off the work.
 
 ## Try it in a minute
 
@@ -47,7 +55,7 @@ Adopting Handover in another harness (Cursor, Aider, Codex CLI, your own runner)
 Two load-bearing ideas:
 
 - **Every claim carries its own check.** A handoff records belief, and belief drifts from reality. So each state claim ships a verify command or an explicit `[belief, unverified]` tag. Verify, don't trust.
-- **Negative knowledge is the irreducible core.** What exists is re-derivable from code; what was *tried and failed*, *deliberately not built*, or *built then reverted* is not. If you must cut length, cut positive state before negative knowledge.
+- **Negative knowledge is the irreducible core.** Anything that exists can be re-read from the code. The abandoned approach, the feature cut on purpose, the change someone already reverted: none of that is anywhere in the diff. If you have to cut length, cut positive state first.
 
 The header is **gated**: a `Write`/`Edit` landing a `HANDOVER_*.md` with a malformed header is blocked, with the exact fields to fix, and `status: done` is refused unless a `verify_cmd` is present. Header-only; prose stays advisory. `/handover:write` scaffolds a compliant doc, filling the header from live `git`/`gh` state so the machine facts are read, not remembered. See [`templates/handover.template.md`](templates/handover.template.md) and a worked [`examples/handover.example.md`](examples/handover.example.md) (scores 100/100).
 
@@ -84,11 +92,11 @@ Handover began as the agent-to-agent wire format inside a broader exploration of
 - **Shape is not truth.** `handover-lint` separates the always-on **STRUCTURE** score from the opt-in **VERIFICATION** pass (`--repo`/`--verify`, checked against the real repo). A high score never means "true" — only `--verify` running the doc's `verify_cmd` does. Repo probes run shell-free, so an untrusted doc can't execute; only your own `verify_cmd` runs, and only when you ask.
 - **Local.** No network, no telemetry. Session state lives in `~/.handover/sessions/`.
 - **Auditable.** Small Node scripts, zero dependencies. Read them in fifteen minutes.
-- **Fail-open.** If a hook crashes or a policy is malformed, Handover emits nothing and Claude Code's normal permissions remain in effect. It tightens the default posture; it is never your only line of defense.
+- **Fail-open.** If a hook crashes or a policy is malformed, Handover emits nothing and Claude Code's normal permissions remain in effect. It raises the floor. Don't rely on it as your only line of defense.
 
 ### What it deliberately does *not* do
 
-Honest boundaries, so the number is never over-trusted:
+Where the score lies to you:
 
 - **STRUCTURE scores shape.** A determined author can write four plausible negative-knowledge lines that are false. Only the VERIFICATION pass (and a human reading the prose) judges truth.
 - **`--verify` runs the doc's `verify_cmd` through a shell**, and `--claims` runs its per-claim commands. That is intended (same trust as `make test`), so pass them only on a handoff you trust to author those commands. Nothing else in a document ever reaches a shell.
@@ -106,7 +114,7 @@ Honest boundaries, so the number is never over-trusted:
 
 ## Status
 
-**0.4.0 (portability + per-claim verification).** The handover document, its lint, and its bench are built and hardened; the behavioral gate ships alongside as a separable concern (see [Scope](#scope)). A trust-and-abuse review reweighted the rubric to score substance over shape, added the repo-aware `--repo`/`--verify` layer, policy tamper-evidence, and fixed a command-injection bug found in review. 36 test checks pass. The repo's own handoff ([docs/HANDOFF.md](docs/HANDOFF.md)) scores 100/100 and verifies clean against HEAD — the tool eats its own dog food. It has also been exercised end-to-end on an external repo by a cold agent (scaffold → fill → lint `--repo`/`--verify`, plus deliberate attacks: fabricated SHA, unproven `done`, placeholders — all caught; two real bugs that run surfaced, a UTC-vs-local date drift and a too-quiet unproven `done`, are fixed with regression tests). Full history in [CHANGELOG.md](CHANGELOG.md); threat model in [docs/SECURITY.md](docs/SECURITY.md); archived design history in [docs/ARCHIVE.md](docs/ARCHIVE.md); what's next in [docs/STALENESS.md](docs/STALENESS.md). The hand-off-time verify gate and public release are the next gated steps.
+**0.4.0 (portability + per-claim verification).** The handover document, its lint, and its bench are built and hardened; the behavioral gate ships alongside as a separable concern (see [Scope](#scope)). A trust-and-abuse review reweighted the rubric to score substance over shape, added the repo-aware `--repo`/`--verify` layer, policy tamper-evidence, and fixed a command-injection bug found in review. 37 test checks pass. The repo's own handoff ([docs/HANDOFF.md](docs/HANDOFF.md)) scores 100/100 and verifies clean against HEAD — the tool eats its own dog food. It has also been exercised end-to-end on an external repo by a cold agent (scaffold → fill → lint `--repo`/`--verify`, plus deliberate attacks: fabricated SHA, unproven `done`, placeholders — all caught; two real bugs that run surfaced, a UTC-vs-local date drift and a too-quiet unproven `done`, are fixed with regression tests). Full history in [CHANGELOG.md](CHANGELOG.md); threat model in [docs/SECURITY.md](docs/SECURITY.md); archived design history in [docs/ARCHIVE.md](docs/ARCHIVE.md); what's next in [docs/STALENESS.md](docs/STALENESS.md). Public since 2026-08-02 under Apache-2.0; the hand-off-time verify gate is the next step.
 
 ## License
 

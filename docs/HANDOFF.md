@@ -16,7 +16,7 @@ status: in_progress
 **Read this first. It is self-contained.** You should not need anything outside this file plus repo access to continue. It supersedes the 0.3.0 hardening handoff that used to live here.
 
 ## 0. Orientation (one paragraph)
-Handover is an enforced agent-to-agent handover document — a strict validated header plus a prose body — with deterministic zero-dependency Node tooling: `handover-lint` scores a doc 0–100 and verifies it against the live repo, `handover-scaffold` fills the header from git, and `bench/run.js` measures whether a handoff actually transfers via planted traps. A separable behavioral gate ships alongside and is slated for extraction. Version 0.3.0 made the tooling check truth as well as shape. This work (0.4.0) was driven by a **cold-agent field test on an external repo** and an expert protocol review: it fixed the two real bugs that surfaced, added per-claim verification, tripled bench coverage, made the tooling usable outside Claude Code, and added the scaffolding an open-source release needs. This is the tree that was actually published: the patent question was decided (not filing — see CHANGELOG.md), and the history scrub happened via a single squashed initial commit rather than a rewrite of private history. What's left is mechanical: tag the release and launch.
+Handover is an enforced agent-to-agent handover document — a strict validated header plus a prose body — with deterministic zero-dependency Node tooling: `handover-lint` scores a doc 0–100 and verifies it against the live repo, `handover-scaffold` fills the header from git, and `bench/run.js` measures whether a handoff actually transfers via planted traps. A separable behavioral gate ships alongside and is slated for extraction. Version 0.3.0 made the tooling check truth as well as shape. This work (0.4.0) was driven by a **cold-agent field test on an external repo** and an expert protocol review: it fixed the two real bugs that surfaced, added per-claim verification, tripled bench coverage, made the tooling usable outside Claude Code, and added the scaffolding an open-source release needs. This is the tree that was actually published, as a single squashed initial commit rather than a rewrite of private history. The repo went public on 2026-08-02 under Apache-2.0 and is tagged `v0.4.0`.
 
 ## 1. Identity (verify each; do not trust blindly)
 | Fact | Value | Verify |
@@ -35,7 +35,7 @@ Handover is an enforced agent-to-agent handover document — a strict validated 
 | The git pre-commit hook suite passes, including fail-open | `bash test/hook.test.sh` |
 | Three bench scenarios exist, not one | `ls bench/scenarios` |
 | `--claims` cannot execute a table inside a code fence | `grep -n maskBody bin/handover-lint.js` |
-| No private-repo references remain in shipping files | `! grep -riq ideas-folder README.md PROTOCOL.md CHANGELOG.md docs/ARCHIVE.md` |
+| No internal-only doc paths are referenced by shipping files | `! grep -riqE 'IP_EVALUATION\|docs/RELEASE' README.md PROTOCOL.md CHANGELOG.md docs/ARCHIVE.md` |
 | The plugin cache still holds an older build until reinstalled | `[belief, unverified]` — nothing here updates `~/.claude/plugins/cache/handover` |
 
 ## 3. Canonical sources (ranked; when they disagree, higher wins; code is truth)
@@ -45,8 +45,8 @@ Handover is an enforced agent-to-agent handover document — a strict validated 
 4. [PROTOCOL.md](../PROTOCOL.md) for the format and rubric; [SECURITY.md](SECURITY.md) for the threat model; [STALENESS.md](STALENESS.md) for the enforcement roadmap.
 5. The tests, for the contract the code actually meets.
 
-(The publish checklist and the patent analysis that used to be linked here were internal
-pre-publish docs — deliberately not part of this public tree; see CHANGELOG.md for the outcome.)
+(Some pre-publish planning docs referenced in earlier drafts were internal working
+files and are deliberately not part of this public tree.)
 
 ## 4. What changed in 0.4.0 (do not rebuild these)
 - Per-claim verification (`--claims`) is **built** — it was item 2 on the STALENESS roadmap. Do not re-implement it.
