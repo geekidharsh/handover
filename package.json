@@ -1,6 +1,6 @@
 {
   "name": "handover-protocol",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "An enforced agent-to-agent handover document: strict validated header + prose body, with deterministic lint and bench tooling. No LLM, no network, zero dependencies.",
   "license": "Apache-2.0",
   "author": {
