@@ -9,3 +9,7 @@ repository-code: "https://github.com/geekidharsh/handover"
 url: "https://github.com/geekidharsh/handover"
 license: Apache-2.0
 version: "0.4.1"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.21797944"
+    description: "Archived release v0.4.1 on Zenodo"

@@ -6,6 +6,8 @@
 
 # Handover
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.21797944.svg)](https://doi.org/10.5281/zenodo.21797944)
+
 Claude Code, Cursor, and Codex forget everything between sessions. The next agent inherits a session summary nobody checked, re-derives what you already knew, and rebuilds what you deliberately threw away.
 
 Handover is an **agent-to-agent handover document** with a header a machine can verify, plus deterministic tooling: a linter that scores it and checks it against the live repo, and a trap-based benchmark that measures whether the handoff actually transferred. The document, and the rules that keep it honest, *are* the product.
