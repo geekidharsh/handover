@@ -4,7 +4,8 @@
   "description": "An enforced agent-to-agent handover document: strict validated header + prose body, with deterministic lint and bench tooling. No LLM, no network, zero dependencies.",
   "license": "Apache-2.0",
   "author": {
-    "name": "Harshvardhan Pandey"
+    "name": "Harshvardhan Pandey",
+    "url": "https://brownlittlefish.com"
   },
   "repository": {
     "type": "git",

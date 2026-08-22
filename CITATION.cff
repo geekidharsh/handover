@@ -5,6 +5,7 @@ type: software
 authors:
   - family-names: Pandey
     given-names: Harshvardhan
+    website: "https://brownlittlefish.com"
 repository-code: "https://github.com/geekidharsh/handover"
 url: "https://github.com/geekidharsh/handover"
 license: Apache-2.0

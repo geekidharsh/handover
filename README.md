@@ -134,6 +134,11 @@ The unfinished edges are tracked as [issues](https://github.com/geekidharsh/hand
 
 Smaller, well-scoped starting points: [add a bench scenario](https://github.com/geekidharsh/handover/issues/1) (one directory, no core changes), [flag dead doc links](https://github.com/geekidharsh/handover/issues/4) (no network at all), or [port the write-time gate](https://github.com/geekidharsh/handover/issues/5) to Cursor, Aider, or your own runner. [CONTRIBUTING.md](CONTRIBUTING.md) has the four invariants any change has to hold.
 
+## Author
+
+Built by [Harshvardhan Pandey](https://brownlittlefish.com) (brownlittlefish).
+Cite via [CITATION.cff](CITATION.cff) or the DOI above.
+
 ## License
 
 Apache-2.0.
