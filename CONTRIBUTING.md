@@ -11,7 +11,7 @@ constraints below are the product, not incidental style.
 2. **Zero runtime dependencies.** Plain Node ≥ 18. If a change needs an npm package, the
    change is wrong for this repo.
 3. **Fail-open.** A crashing hook or malformed policy must degrade to "Handover emits
-   nothing" — never to blocking the user's work.
+   nothing", never to blocking the user's work.
 4. **Shell-free probes on untrusted input.** Anything read from a handoff document must
    never reach a shell. Only the user-opted `--verify` runs the doc's own `verify_cmd`,
    and that is documented as the same trust level as `make test`.
@@ -43,13 +43,13 @@ node bench/run.js    # bench scenarios
   `bench/scenarios/<name>/` with `traps.json` (the planted traps and their
   `guard_pattern` / `detect_fell_in`), plus `good.handover.md` and `bad.handover.md`.
   Author the traps from a real failure you have seen, *before* writing the good
-  artifact — not by copying phrases out of it.
+  artifact, not by copying phrases out of it.
 
 ## Reporting bugs and security issues
 
 - Bugs: open a GitHub issue with the doc (or a minimal repro) and the command you ran.
 - Security: see [SECURITY.md](SECURITY.md). The threat model lives in
-  [docs/SECURITY.md](docs/SECURITY.md); read it before reporting "lint can be gamed" —
+  [docs/SECURITY.md](docs/SECURITY.md); read it before reporting "lint can be gamed",
   what the score does and does not claim is documented there.
 
 ## License

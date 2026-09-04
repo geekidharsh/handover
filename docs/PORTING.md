@@ -4,8 +4,8 @@ Handover is two things stacked, and only the top one is Claude Code-specific:
 
 | Layer | Files | Portable? |
 |---|---|---|
-| The document + spec | `PROTOCOL.md`, `templates/`, `examples/` | Plain markdown — fully portable |
-| Lint / scaffold / bench | `bin/*.js`, `bench/` | Plain Node ≥18, zero dependencies — fully portable |
+| The document + spec | `PROTOCOL.md`, `templates/`, `examples/` | Plain markdown, fully portable |
+| Lint / scaffold / bench | `bin/*.js`, `bench/` | Plain Node ≥18, zero dependencies, fully portable |
 | Enforcement at a session boundary | `hooks/*.js`, `hooks/hooks.json` | Speaks the Claude Code hook protocol |
 | Author-facing commands | `commands/*.md` | Claude Code slash commands |
 
@@ -26,7 +26,7 @@ replacing the third.
    > read the newest `Docs/HANDOVER_*.md` first and run
    > `handover-lint <path> --repo --claims` to see which of its claims still hold.
 
-3. Install the git hook — this is the part that makes it stick without any harness
+3. Install the git hook; this is the part that makes it stick without any harness
    integration at all:
 
    ```bash
@@ -48,7 +48,7 @@ If your harness has tool-call hooks, the header gate is the piece worth porting;
 
 - **Trigger:** after a write/edit whose target path matches `HANDOVER_*.md`.
 - **Logic:** `require('bin/lib/handover-doc.js').evaluate(fileContents)`; if
-  `result.valid` is false, block and return `result.headerErrors` — each error already
+  `result.valid` is false, block and return `result.headerErrors`; each error already
   carries the field name and the fix.
 - **Fail open:** any exception in the hook must emit nothing. A crashing gate that blocks
   work is worse than no gate.
@@ -65,12 +65,12 @@ The same check as a pull-request gate, no harness involved:
 ```
 
 Use `--strict` in CI so drift and an unproven `done` fail the build. Add `--claims` only
-where you are comfortable executing the document's own commands — the same trust decision
+where you are comfortable executing the document's own commands; the same trust decision
 as running that repo's test suite.
 
 ## What does not port, and why
 
 The behavioral gate (`hooks/gate.js`, `hooks/loop.js`) is Claude Code-specific *and*
 belongs to a different product (see the Scope section of the README). Do not port it as
-part of adopting the handover document — they are separable concerns that happen to ship
+part of adopting the handover document; they are separable concerns that happen to ship
 in one repo today.
