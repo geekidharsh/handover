@@ -1,6 +1,6 @@
 cff-version: 1.2.0
 message: "If you use Handover — the protocol, the lint/scaffold tooling, or the bench — please cite it as below."
-title: "Handover: An Enforced Agent-to-Agent Handover Document"
+title: "Handover: An Enforced Agent-to-Agent Handoff Document and a Trap-Based Benchmark for Measuring Context Transfer"
 type: software
 authors:
   - family-names: Pandey
