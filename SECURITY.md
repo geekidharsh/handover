@@ -1,7 +1,7 @@
 # Security policy
 
-Handover's full threat model — what the tooling defends against, known residual risks,
-and the honest limits of a deterministic linter — lives in
+Handover's full threat model, what the tooling defends against, known residual risks,
+and the honest limits of a deterministic linter, lives in
 [docs/SECURITY.md](docs/SECURITY.md).
 
 ## Reporting a vulnerability
@@ -20,6 +20,6 @@ expected behavior.
 - **`--verify` intentionally executes the doc's own `verify_cmd` through a shell.** That
   is opt-in and documented as the same trust level as running `make test` in a repo you
   just cloned. A way to make *header fields or other doc content* reach a shell without
-  `--verify` **is** a vulnerability — report it.
+  `--verify` **is** a vulnerability, report it.
 - Anything that makes a hook fail *closed* (blocking work when Handover crashes) is a
   bug we want to know about.

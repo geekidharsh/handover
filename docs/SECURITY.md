@@ -50,11 +50,11 @@ pass, run inside the doc's own repo, touches ground truth.
 2. **Self-neutering policy.** `Write`/`Edit` are route-around-exempt, so an agent
    could rewrite `.handover/policy.json` to drop every `deny`. **Fix:** the
    policy self-edit guard (`ask`) + `audit` provenance report. This is
-   *detection and friction*, not prevention — a user who approves the edit, or a
+   *detection and friction*, not prevention, a user who approves the edit, or a
    committed-but-permissive policy, still applies.
 3. **Score ≠ truth.** A high structural score was being read as "trustworthy."
    **Fix:** output and docs split STRUCTURE from VERIFICATION; the score line
-   carries "shape only — not proof of truth."
+   carries "shape only, not proof of truth."
 
 ## Review findings (0.4.0)
 
@@ -62,8 +62,8 @@ pass, run inside the doc's own repo, touches ground truth.
    release).** The first cut of per-claim verification decided what to execute by
    scanning **raw** document lines for a table whose last column header merely
    *contained* "verif". Adversarial review proved two working escapes with a
-   canary payload: (a) a claims table inside a fenced code block — an
-   illustrative example, or a hostile document quoted inside a legitimate one —
+   canary payload: (a) a claims table inside a fenced code block, an
+   illustrative example, or a hostile document quoted inside a legitimate one,
    was parsed as live and executed; (b) any table with a `Verified By` /
    `Verification Owner` column had its cells executed, so a reviewer roster
    became an execution list. **Fix:** extraction now runs on **fence-masked**
@@ -74,15 +74,15 @@ pass, run inside the doc's own repo, touches ground truth.
 
    The durable lesson, and the reason this is written up rather than quietly
    patched: **every new place a document's own text can reach a shell must be
-   opt-in twice** — once by the user (a flag) and once by the document (an
-   unambiguous, exact marker) — and must read from the same masked view the rest
+   opt-in twice**, once by the user (a flag) and once by the document (an
+   unambiguous, exact marker), and must read from the same masked view the rest
    of the tooling uses. A second parser over raw text is a second attack surface.
 5. **Fence-masking didn't track fence length (found in a follow-up security
-   review, introduced then fixed in this release).** Finding 4's fix — mask
-   fenced code blocks before extracting claims — had its own gap: `maskBody()`
+   review, introduced then fixed in this release).** Finding 4's fix, mask
+   fenced code blocks before extracting claims, had its own gap: `maskBody()`
    toggled a plain boolean on any line matching three-or-more backticks,
    regardless of run length. CommonMark closes a fence only on a delimiter of
-   the *same character* and *at least as many* repeats as the opener — so a
+   the *same character* and *at least as many* repeats as the opener, so a
    4-backtick outer fence is not closed by a nested 3-backtick line under
    GitHub's renderer or any standard viewer. The naive toggle disagreed: it
    closed the outer fence early on the inner 3-backtick line, unmasking a
@@ -113,7 +113,7 @@ pass, run inside the doc's own repo, touches ground truth.
   prose close that.
 - **No provenance/signing.** `author` is self-declared, not authenticated.
   Forged *negative knowledge* ("do not re-add X") is the highest-leverage attack
-  on a receiver and is not yet cryptographically attributable — tracked as a
+  on a receiver and is not yet cryptographically attributable, tracked as a
   roadmap item in [STALENESS.md](STALENESS.md).
 - **Fail-open by design.** A crashed hook or malformed policy emits nothing and
   Claude Code's normal permissions apply. Handover tightens the default posture;
@@ -128,6 +128,6 @@ pass, run inside the doc's own repo, touches ground truth.
 
 See the root [SECURITY.md](../SECURITY.md) for how to report. In short: a GitHub
 security advisory for anything sensitive, an issue otherwise. Note the scope
-carve-outs there — a false document scoring 100/100 is documented behavior, but
+carve-outs there, a false document scoring 100/100 is documented behavior, but
 any path that gets document content to a shell *without* `--verify`/`--claims`
 is a real vulnerability.

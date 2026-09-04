@@ -3,7 +3,7 @@
 All notable changes to Handover. Dates are ISO-8601. This project targets
 Handover protocol `protocol_version: 1`.
 
-## [0.4.0] — 2026-08-01 — Portability, per-claim verification, open-source readiness
+## [0.4.0], 2026-08-01, Portability, per-claim verification, open-source readiness
 
 Driven by a cold-agent field test on an external repo (the first time the tooling was
 run by someone who only had the README) plus an expert protocol review. Two real bugs
@@ -12,13 +12,13 @@ scaffolding an open-source release needs.
 
 ### Fixed
 - **Date drift across timezones.** Scaffold and lint derived "today" from
-  `new Date().toISOString().slice(0,10)` — the UTC date. After ~17:00 US-Pacific that is
+  `new Date().toISOString().slice(0,10)`; the UTC date. After ~17:00 US-Pacific that is
   already tomorrow, so a scaffold stamped a future-looking `iso_date` and the future-date
   check ran a day ahead of wall-clock. Both now use a shared `localISODate()`
   (`bin/lib/handover-doc.js`), with a regression test that compares it to `date +%F`
   under two extreme timezones.
-- **An unproven `done` was too quiet.** `handover-lint doc.md` with no flags — the most
-  likely cold-user invocation — exited 0 on a `status: done` doc without ever mentioning
+- **An unproven `done` was too quiet.** `handover-lint doc.md` with no flags; the most
+  likely cold-user invocation, exited 0 on a `status: done` doc without ever mentioning
   that `verify_cmd` had not been run. The `done-unproven` warning now fires in
   structure-only mode too.
 - **Scaffold ticket detection was hard-coded to one project's ticket prefix.** Now matches
@@ -37,7 +37,7 @@ scaffolding an open-source release needs.
   names the specific rows that no longer hold, localizing drift instead of failing the
   whole document. Was item 2 on the STALENESS roadmap. Because this is the second place a
   document's own text can reach a shell, execution is doubly gated: the table must opt in
-  with an **exact** last-column header (`Verify` / `Verification` / `Check` — "Verified
+  with an **exact** last-column header (`Verify` / `Verification` / `Check`, "Verified
   By" is a roster, not a command list), and extraction runs on **fence-masked** lines so a
   table inside a code block is an example, never an instruction. `[belief]`-tagged rows are
   skipped. Both gates were added after an adversarial review of the first implementation
@@ -47,10 +47,10 @@ scaffolding an open-source release needs.
   that validates any staged `HANDOVER_*.md` / `*.handover.md` in any repo with any agent
   (or none). Fails **open** when Handover is not installed, and never executes anything
   out of the document being committed. `docs/PORTING.md` covers adoption in other
-  harnesses (Cursor, Aider, Codex CLI, CI) — previously the repo assumed Claude Code.
+  harnesses (Cursor, Aider, Codex CLI, CI), previously the repo assumed Claude Code.
 - **Execution contract documented** (`PROTOCOL.md` §6b): commands run through the shell
   from the current working directory, 120s for `verify_cmd` / 30s per claim, and only the
-  exit code is read — so a check that exits 0 regardless passes vacuously.
+  exit code is read, so a check that exits 0 regardless passes vacuously.
 - **Two new bench scenarios**, tripling trap coverage: `failed-dependency-upgrade` (a
   pinned dependency whose upgrade already failed, a load-bearing file that looks dead, a
   first step that must precede a misleading error) and `descoped-admin-export` (a
@@ -65,17 +65,17 @@ scaffolding an open-source release needs.
 ### Changed
 - README: the install command pointed at a legacy local path on the author's machine; it
   now points at the public repo. Added a **CLI-direct** section (scaffold/lint usage from
-  any repo, any harness) — previously the raw invocation appeared only inside an internal
+  any repo, any harness), previously the raw invocation appeared only inside an internal
   status doc, so a non-Claude-Code user had no documented path.
 - Tests: 21 checks in `test/verify.test.sh` (was 13), a new `test/hook.test.sh` (4 checks
   incl. the fail-open case), 37 top-level.
 
 ## [Unreleased]
 
-- **Docs re-scope (no code change).** README rewritten around a single identity — an enforced, agent-to-agent handover document (format + lint + bench) — with the behavioral gate (mutation gate / sticky denials / loop detector) demoted from a co-equal module to a separable "Scope" concern. Added a lineage note (Handover originated from the ContextOps exploration as its agent-to-agent wire format). Stripped framing and rationale moved to new `docs/ARCHIVE.md` (linked from README and the docs router); no content discarded.
+- **Docs re-scope (no code change).** README rewritten around a single identity, an enforced, agent-to-agent handover document (format + lint + bench), with the behavioral gate (mutation gate / sticky denials / loop detector) demoted from a co-equal module to a separable "Scope" concern. Added a lineage note (Handover originated from the ContextOps exploration as its agent-to-agent wire format). Stripped framing and rationale moved to new `docs/ARCHIVE.md` (linked from README and the docs router); no content discarded.
 - **Gate home identified (no code change).** The behavioral gate is recorded as the in-session runtime layer of a separate **agent clearance / permissions layer** (the "human-at-the-gate" model), slated for extraction from this repo. It ships here unnamed until that extraction; no rename performed.
 
-## [0.3.0] — 2026-07-11 — Hardening
+## [0.3.0], 2026-07-11, Hardening
 
 A trust-and-abuse review of 0.2.0 found that the tooling checked a handoff's
 *shape* but never its *truth*, and that several enforcement points were
@@ -88,7 +88,7 @@ format is unchanged and old docs still validate.
   - `--repo` (read-only): confirms `true_at_sha` exists in the repo, computes
     drift with `git rev-list <sha>..HEAD` (lists changed files), flags a future
     `iso_date`.
-  - `--verify`: everything `--repo` does, plus runs `verify_cmd` — the only
+  - `--verify`: everything `--repo` does, plus runs `verify_cmd`; the only
     thing that turns `status: done` from belief into fact. `--run-verify` kept
     as an alias.
   - `--strict`: drift / unproven-done also exit non-zero.
@@ -107,7 +107,7 @@ format is unchanged and old docs still validate.
 - **Test suites**: `test/doc.test.js` (39 pure-core assertions) and
   `test/verify.test.sh` (13 repo-aware checks against a throwaway git repo,
   including a command-injection canary). `test/run.sh` grew policy-edit and
-  audit checks and wires both suites in — 36 top-level checks total.
+  audit checks and wires both suites in, 36 top-level checks total.
 - **Docs**: `docs/STALENESS.md` (staleness surface + enforcement roadmap),
   `docs/SECURITY.md` (threat model, review findings, residual limits), this
   changelog.
@@ -116,7 +116,7 @@ format is unchanged and old docs still validate.
 - **Rubric reweighted** to 45/20/15/12/8 (`bin/lib/handover-doc.js`), and every
   component made harder to game:
   - Negative knowledge (20) scored per §2b category, each requiring its own line
-    with real content past the label — keyword-stuffing and left-in scaffold
+    with real content past the label, keyword-stuffing and left-in scaffold
     placeholders earn nothing.
   - Section completeness (15) requires the cue on a *structural* line (heading or
     list item), not buried inline.
@@ -149,7 +149,7 @@ format is unchanged and old docs still validate.
   example text in a commit message can trigger a destructive-pattern rule.
 - No provenance/signing: `author` is self-declared, not authenticated.
 
-## [0.2.0] — 2026-07-09
+## [0.2.0], 2026-07-09
 
 Initial three-module build (Protocol, Gate, Bench) as a Claude Code plugin;
 renamed from an earlier working title.

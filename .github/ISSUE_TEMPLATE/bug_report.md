@@ -10,7 +10,7 @@ labels: bug
 node bin/handover-lint.js ... 
 ```
 
-**The document** (paste it, or a minimal repro — redact anything private)
+**The document** (paste it, or a minimal repro, redact anything private)
 
 ```markdown
 
@@ -25,5 +25,5 @@ node bin/handover-lint.js ...
 - Used as: CLI / Claude Code plugin / other harness
 
 **Before filing:** if the report is "the score can be gamed" or "a false doc scored high,"
-please read [docs/SECURITY.md](../../docs/SECURITY.md) first — the STRUCTURE score judges
+please read [docs/SECURITY.md](../../docs/SECURITY.md) first; the STRUCTURE score judges
 shape, not truth, by design.
