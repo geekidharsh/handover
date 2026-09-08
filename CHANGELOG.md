@@ -3,6 +3,17 @@
 All notable changes to Handover. Dates are ISO-8601. This project targets
 Handover protocol `protocol_version: 1`.
 
+
+## Unreleased
+
+- Credit: the maker of Handover is Household (household.dev); the person stays the
+  paper's author in CITATION.cff and the paper byline, with the affiliation stated.
+  `NOTICE`, `package.json`, the plugin and marketplace manifests, the README footer
+  and the paper's affiliation line agree, and `tools/check-identity.sh` now checks
+  the maker and the paper author separately, plus that the version agrees across
+  `package.json`, the plugin manifest, `CITATION.cff` and the README.
+- The plugin manifest said 0.4.0 while the release was 0.4.1; aligned.
+
 ## [0.4.0], 2026-08-01, Portability, per-claim verification, open-source readiness
 
 Driven by a cold-agent field test on an external repo (the first time the tooling was

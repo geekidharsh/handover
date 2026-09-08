@@ -5,7 +5,8 @@ type: software
 authors:
   - family-names: Pandey
     given-names: Harshvardhan
-    website: "https://brownlittlefish.com"
+    affiliation: "Household Intelligence Labs"
+    website: "https://household.dev"
 repository-code: "https://github.com/geekidharsh/handover"
 url: "https://github.com/geekidharsh/handover"
 license: Apache-2.0

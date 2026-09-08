@@ -2,7 +2,8 @@
   "name": "handover",
   "description": "Marketplace for the Handover plugin: an enforced agent-to-agent handover document with deterministic lint, repo-aware verification, and a trap-based transfer bench.",
   "owner": {
-    "name": "Harshvardhan Pandey"
+    "name": "Household",
+    "url": "https://household.dev"
   },
   "plugins": [
     {
