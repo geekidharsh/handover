@@ -45,13 +45,29 @@ check() { # file, pattern, label
 echo "Canonical (from package.json): name=\"$NAME\"  repo=\"$REPO_SLUG\"  license=\"$LICENSE\""
 echo ""
 
-check "NOTICE" "$NAME" "author name"
+# The MAKER (package.json author) is the organisation: it is what a tool credits.
+# The paper and CITATION.cff name a person, because a citation names its authors;
+# they are checked against each other, not against the maker.
+check "NOTICE" "$NAME" "maker name"
 check "CITATION.cff" "$REPO" "repo URL"
 check "CITATION.cff" "$LICENSE" "license"
-check ".claude-plugin/plugin.json" "$NAME" "author name"
+check ".claude-plugin/plugin.json" "$NAME" "maker name"
+check ".claude-plugin/marketplace.json" "$NAME" "owner name"
 check "README.md" "$REPO_SLUG" "repo slug (install command)"
+check "README.md" "$NAME" "maker credit (footer)"
 check "paper/handover.html" "$REPO_SLUG" "repo slug (byline/footer)"
-check "paper/handover.html" "$NAME" "author byline"
+PAPER_AUTHOR=$(sed -n 's/.*family-names: *//p' CITATION.cff | head -1)
+check "paper/handover.html" "$PAPER_AUTHOR" "paper author (matches CITATION.cff)"
+
+# Versions: one number, stated in four places, must agree.
+VERSION=$(node -e 'process.stdout.write(require("./package.json").version || "")')
+check ".claude-plugin/plugin.json" "\"version\": \"$VERSION\"" "version"
+check "CITATION.cff" "version: \"$VERSION\"" "version"
+check "README.md" "\*\*$VERSION" "version (Status section)"
+LATEST_TAG=$(git tag --list 'v*' --sort=-v:refname 2>/dev/null | head -1)
+if [ -n "$LATEST_TAG" ] && [ "$LATEST_TAG" != "v$VERSION" ]; then
+  echo "  NOTE   latest tag is $LATEST_TAG while package.json says $VERSION (fine before a release, drift after one)"
+fi
 
 # true_at_sha anchors: list them so a human decides which need re-anchoring after
 # a squash-publish, rather than silently trusting an old one. Not pass/fail on its
